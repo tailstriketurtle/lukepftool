@@ -72,7 +72,7 @@
 
         .reg-inputs-panel { border-top: 1px dashed rgba(255, 255, 255, 0.06); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
         .reg-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.15); padding: 4px 8px; border-radius: 6px; }
-        .reg-row label { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; font-weight: 600; }
+        .reg-row label { font-size: 0.7 flex; font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; font-weight: 600; }
         .reg-field { background: rgba(7, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 3px 8px; color: #2196f3; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: right; width: 110px; text-transform: uppercase; }
         .reg-field:focus { border-color: #2196f3; outline: none; }
 
@@ -128,7 +128,6 @@
 
     <script src="sidebar.js"></script>
     <script>
-        // AUTHENTIC ROBLOX PROJECT FLIGHT INVENTORY ONLY
         const AIRCRAFT_DATA = [
             { id: 'dhc6', model: 'Twin Otter (DHC-6)', desc: 'Short Takeoff Utility Turboprop', range: '775 nm', speed: '170 kts', cap: '19 Pax', maxPax: 19, type: 'Prop', price: 380000 },
             { id: 'b350', model: 'Beechcraft King Air 350', desc: 'Premium Corporate Turboprop', range: '1,806 nm', speed: '312 kts', cap: '9 Pax', maxPax: 9, type: 'Prop', price: 850000 },
@@ -152,7 +151,7 @@
                 document.getElementById('lblWalletBalance').innerText = `$${db.balance.toLocaleString()}`;
             } else {
                 alert("No active flight profile detected. Please configure via the dashboard setup first.");
-                window.location.href = 'lpft_main.html';
+                window.location.href = 'index.html';
                 return;
             }
             renderMarketplace();
@@ -300,7 +299,7 @@
                         model: item.model,
                         reg: reg,
                         maxPax: item.maxPax,
-                        status: 'Available', // Synchronized initialization string with lpft_main display conditions
+                        status: 'Available', 
                         purchasedOn: new Date().toISOString().split('T')[0]
                     });
                 }
@@ -316,11 +315,14 @@
                 return;
             }
 
+            // Deduct from temporary memory variable
             db.balance -= orderTotal;
             if (!db.fleet) db.fleet = [];
             db.fleet = db.fleet.concat(planesToAdd);
 
+            // CRITICAL FIX: Explicitly update local storage string so it saves!
             localStorage.setItem('lpf_airline_db', JSON.stringify(db));
+            
             alert(`Purchase successful! ${planesToAdd.length} aircraft added to your fleet.`);
             clearCart();
             document.getElementById('lblWalletBalance').innerText = `$${db.balance.toLocaleString()}`;
