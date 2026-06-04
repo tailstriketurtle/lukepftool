@@ -5,11 +5,11 @@ const DEFAULT_STORAGE_KEY = "lpf_airline_db";
 
 // Initial starting state structure
 const defaultState = {
-    airlineName: "Global Air Logistics",
-    icao: "GAL",
+    airlineName: "EXAMPLE AIRLINE",
+    icao: "E.G",
     hub: "MDPC",
     mode: "admiral",
-    balance: 5000000,
+    balance: 5000000000000,
     stats: {
         totalFlights: 0,
         flightTimeHours: 0,
