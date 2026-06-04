@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKEPFTOOL - Dashboard Onboarding</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #070b10;
+            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('login_background.jpg');
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .onboard-container { width: 100%; max-width: 550px; padding: 0 20px; text-align: center; }
+        h1 {
+            font-family: 'Syne', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; font-size: 2rem; margin-bottom: 2rem;
+            background: linear-gradient(135deg, #64b5f6, #2196f3);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .onboard-card {
+            background: linear-gradient(135deg, rgba(18, 22, 28, 0.75), rgba(12, 15, 20, 0.85)); 
+            padding: 3rem 2.5rem; border-radius: 20px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255,255,255,0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            position: relative;
+        }
+        
+        .steps-indicator { display: flex; justify-content: space-between; margin-bottom: 2.5rem; position: relative; max-width: 300px; margin-left: auto; margin-right: auto; }
+        .steps-indicator::before {
+            content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+            width: 100%; height: 2px; background: rgba(255,255,255,0.1); z-index: 1;
+        }
+        .step-dot {
+            width: 35px; height: 35px; background: #12161c; border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 600; z-index: 2; color: rgba(255,255,255,0.4); transition: 0.3s;
+        }
+        .step-dot.active { border-color: #2196f3; color: #2196f3; box-shadow: 0 0 15px rgba(33, 150, 243, 0.3); }
+        .step-dot.completed { background: #2196f3; border-color: #2196f3; color: #070b10; }
+
+        .step-panel { display: none; text-align: left; }
+        .step-panel.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { font-family: 'Syne', sans-serif; font-size: 1.3rem; text-transform: uppercase; margin-bottom: 0.5rem; opacity: 0.9; letter-spacing: 1px; }
+        p.subtitle { color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-bottom: 2rem; }
+
+        .form-group { position: relative; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.15); display: flex; }
+        .form-group:focus-within { border-bottom-color: #2196f3; }
+        input { width: 100%; background: none; border: none; outline: none; padding: 10px 30px 10px 0; color: #fff; font-size: 0.95rem; font-weight: 300; font-family: inherit; }
+        input::placeholder { color: rgba(255,255,255,0.3); }
+        i.input-icon { position: absolute; right: 5px; bottom: 12px; color: rgba(255,255,255,0.35); font-size: 0.9rem; transition: 0.3s; z-index: 5; }
+
+        /* Custom Dropdown Styling */
+        .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 2rem; }
+        .select-trigger {
+            width: 100%; padding: 10px 30px 10px 0; color: rgba(255,255,255,0.3); font-size: 0.95rem;
+            font-weight: 300; border-bottom: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
+        }
+        .custom-select-wrapper.active .select-trigger { border-bottom-color: #2196f3; color: #fff; }
+        
+        .select-options-menu {
+            position: absolute; top: calc(100% + 5px); left: 0; width: 100%; max-height: 280px;
+            background: #0d121a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+            overflow-y: auto; display: none; z-index: 100; box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+        }
+        .custom-select-wrapper.active .select-options-menu { display: block; }
+        
+        .select-group-title {
+            padding: 12px 15px 4px 15px; font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; color: #2196f3; letter-spacing: 1px; background: #0d121a;
+        }
+        .select-option-item {
+            padding: 10px 25px; font-size: 0.9rem; color: rgba(255,255,255,0.8); cursor: pointer; transition: 0.2s;
+        }
+        .select-option-item:hover { background: rgba(33, 150, 243, 0.15); color: #fff; }
+
+        /* Dynamic Hub Image Container Frame */
+        .hub-preview-container {
+            width: 100%; height: 0; opacity: 0; overflow: hidden; border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08); margin-top: -0.5rem; margin-bottom: 1.5rem;
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+        }
+        .hub-preview-container.visible { height: 180px; opacity: 1; }
+        .hub-preview-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        /* Strategy Mode Cards */
+        .mode-container { display: flex; flex-direction: column; gap: 12px; }
+        .mode-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .mode-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); }
+        .mode-card.selected { border-color: #2196f3; background: rgba(33, 150, 243, 0.05); }
+        .mode-card h3 { font-size: 0.9rem; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+        .mode-card p { font-size: 0.75rem; color: rgba(255,255,255,0.4); line-height: 1.4; }
+        .recommended-tag { font-size: 0.65rem; color: #2196f3; font-weight: 800; letter-spacing: 1px; border: 1px solid #2196f3; padding: 2px 6px; border-radius: 4px; margin-left: auto; }
+
+        .warning-note { margin-top: 1.5rem; font-size: 0.75rem; color: #ef5350; font-weight: 500; display: flex; align-items: center; gap: 8px; opacity: 0.8; }
+        
+        .btn-container { display: flex; justify-content: space-between; margin-top: 2.5rem; gap: 15px; }
+        .nav-btn {
+            background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.15); 
+            padding: 0.8rem 1.5rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 30px; transition: 0.3s;
+        }
+        .nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .next-btn { background: linear-gradient(135deg, #64b5f6, #2196f3); color: #070b10; border: none; flex-grow: 1; box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2); }
+        .next-btn:hover { filter: brightness(1.08); box-shadow: 0 8px 25px rgba(33, 150, 243, 0.35); }
+    </style>
+    <script src="lpft_storage.js"></script>
+</head>
+<body>
+
+    <div class="onboard-container">
+        <h1>LUKEPFTOOL</h1>
+        
+        <div class="onboard-card">
+            <div class="steps-indicator">
+                <div class="step-dot active" id="dot1">1</div>
+                <div class="step-dot" id="dot2">2</div>
+                <div class="step-dot" id="dot3">3</div>
+            </div>
+
+            <div class="step-panel active" id="step1">
+                <h2>Airline Identity</h2>
+                <p class="subtitle">Establish your Roblox Project Flight brand config.</p>
+                
+                <div class="form-group">
+                    <input type="text" id="airlineName" placeholder="Airline Name (e.g., SkyBound Air)" autocomplete="off">
+                    <i class="fa-solid fa-plane-departure input-icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="airlineCode" placeholder="ICAO / Code (e.g., SBA)" autocomplete="off" maxlength="4">
+                    <i class="fa-solid fa-passport input-icon"></i>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="airlineCallsign" placeholder="Radio Callsign (e.g., SKYBOUND)" autocomplete="off">
+                    <i class="fa-solid fa-headset input-icon"></i>
+                </div>
+            </div>
+
+            <div class="step-panel" id="step2">
+                <h2>Base Operations</h2>
+                <p class="subtitle">Select your main Project Flight operational hub.</p>
+                
+                <div class="custom-select-wrapper" id="hubSelectWrapper">
+                    <div class="select-trigger" onclick="toggleDropdown()">
+                        <span id="selectedHubText">Select Primary Hub Base</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size:0.8rem; margin-left:10px;"></i>
+                    </div>
+                    <i class="fa-solid fa-map-location-dot input-icon"></i>
+                    
+                    <div class="select-options-menu">
+                        <div class="select-group-title">Dominican Republic & Haiti</div>
+                        <div class="select-option-item" onclick="selectHub('MDPC', 'Punta Cana International (MDPC)')">Punta Cana International (MDPC)</div>
+                        <div class="select-option-item" onclick="selectHub('MDST', 'Cibao International (MDST)')">Cibao International (MDST)</div>
+                        <div class="select-option-item" onclick="selectHub('MDAB', 'Arroyo Barril Airport (MDAB)')">Arroyo Barril Airport (MDAB)</div>
+                        <div class="select-option-item" onclick="selectHub('MDCR', 'Cabo Rojo Airstrip (MDCR)')">Cabo Rojo Airstrip (MDCR)</div>
+                        <div class="select-option-item" onclick="selectHub('MTCA', 'Antoine-Simon Airport (MTCA)')">Antoine-Simon Airport (MTCA)</div>
+                        
+                        <div class="select-group-title">Cyprus Island</div>
+                        <div class="select-option-item" onclick="selectHub('LCLK', 'Larnaca International (LCLK)')">Larnaca International (LCLK)</div>
+                        <div class="select-option-item" onclick="selectHub('LCPH', 'Paphos International (LCPH)')">Paphos International (LCPH)</div>
+                        <div class="select-option-item" onclick="selectHub('LCRA', 'RAF Akrotiri Airbase (LCRA)')">RAF Akrotiri Airbase (LCRA)</div>
+                        
+                        <div class="select-group-title">United Kingdom</div>
+                        <div class="select-option-item" onclick="selectHub('EGKK', 'London Gatwick (EGKK)')">London Gatwick (EGKK)</div>
+                        <div class="select-option-item" onclick="selectHub('EGHI', 'Southampton Airport (EGHI)')">Southampton Airport (EGHI)</div>
+                        
+                        <div class="select-group-title">European Islands</div>
+                        <div class="select-option-item" onclick="selectHub('GCLP', 'Gran Canaria Airport (GCLP)')">Gran Canaria Airport (GCLP)</div>
+                        <div class="select-option-item" onclick="selectHub('LEMH', 'Menorca Airport (LEMH)')">Menorca Airport (LEMH)</div>
+                        
+                        <div class="select-group-title">Nordic Region</div>
+                        <div class="select-option-item" onclick="selectHub('EFKT', 'Kittilä Airport (EFKT)')">Kittilä Airport (EFKT)</div>
+                    </div>
+                </div>
+
+                <div class="hub-preview-container" id="hubPhotoContainer">
+                    <img src="" id="hubPreview" class="hub-preview-img" alt="Airport Preview">
+                </div>
+            </div>
+
+            <div class="step-panel" id="step3">
+                <h2>Strategy Mode</h2>
+                <p class="subtitle">Choose your starting capital and career path.</p>
+                
+                <div class="mode-container">
+                    <div class="mode-card" onclick="selectMode('regional', this)">
+                        <h3><i class="fa-solid fa-compass"></i> Regional Captain</h3>
+                        <p>Challenging startup with limited capital. Focus on small-scale regional operations and slow, earned growth.</p>
+                    </div>
+
+                    <div class="mode-card selected" id="defaultMode" onclick="selectMode('admiral', this)">
+                        <h3>
+                            <i class="fa-solid fa-shield-halved"></i> Fleet Admiral
+                            <span class="recommended-tag">RECOMMENDED</span>
+                        </h3>
+                        <p>Balanced starting funds for steady airline expansion. Perfect for mixing regional routes with medium-haul jets.</p>
+                    </div>
+
+                    <div class="mode-card" onclick="selectMode('tycoon', this)">
+                        <h3><i class="fa-solid fa-crown"></i> Global Tycoon</h3>
+                        <p>High starting capital. Skip the grind and establish a massive long-haul presence across all regions immediately.</p>
+                    </div>
+                </div>
+
+                <div class="warning-note">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Notice: Mode cannot be changed after setup.</span>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="nav-btn" id="prevBtn" disabled onclick="handleNavigation(-1)">Back</button>
+                <button class="nav-btn next-btn" id="nextBtn" onclick="handleNavigation(1)">Next Step</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedDifficulty = 'admiral';
+        let selectedHubValue = '';
+
+        function toggleDropdown() {
+            document.getElementById('hubSelectWrapper').classList.toggle('active');
+        }
+
+        function selectHub(value, labelText) {
+            selectedHubValue = value;
+            document.getElementById('selectedHubText').innerText = labelText;
+            document.getElementById('selectedHubText').style.color = '#fff';
+            document.getElementById('hubSelectWrapper').classList.remove('active');
+            updateHubPhoto(value);
+        }
+
+        window.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('hubSelectWrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                wrapper.classList.remove('active');
+            }
+        });
+
+        function updateHubPhoto(icaoCode) {
+            const container = document.getElementById('hubPhotoContainer');
+            const img = document.getElementById('hubPreview');
+            
+            if (icaoCode) {
+                img.src = `AIRPORT PHOTOS/${icaoCode.toLowerCase()}_photo.jpg`;
+                container.classList.add('visible');
+            } else {
+                container.classList.remove('visible');
+            }
+        }
+
+        function selectMode(mode, element) {
+            selectedDifficulty = mode;
+            document.querySelectorAll('.mode-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function getStartingCapital(mode) {
+            switch(mode) {
+                case 'regional': return 50000;       
+                case 'admiral':  return 5000000;     
+                case 'tycoon':   return 150000000;   
+                default:         return 5000000;
+            }
+        }
+
+        function initializeAirline() {
+            const rawName = document.getElementById('airlineName').value.trim() || 'Global Air Logistics';
+            const rawIcao = document.getElementById('airlineCode').value.trim() || 'GAL';
+            const rawCallsign = document.getElementById('airlineCallsign').value.trim() || 'GLOBAL';
+            const rawHub = selectedHubValue || 'MDPC';
+            const rawMode = selectedDifficulty;
+
+            // Build fresh clean data profile matching database specs
+            const initialDatabase = {
+                airlineName: rawName,
+                icao: rawIcao.toUpperCase(),
+                callsign: rawCallsign.toUpperCase(),
+                hub: rawHub.toUpperCase(),
+                mode: rawMode,
+                balance: getStartingCapital(rawMode),
+                stats: {
+                    activeSchedules: 0,
+                    crewCount: 0,
+                    totalFlights: 0,
+                    fleetCount: 1
+                },
+                flightLogs: [],
+                topRoutes: []
+            };
+
+            // Write straight to storage system database slot
+            localStorage.setItem('lpf_airline_db', JSON.stringify(initialDatabase));
+
+            const name = encodeURIComponent(rawName);
+            const icao = encodeURIComponent(rawIcao);
+            const hub = encodeURIComponent(rawHub);
+            const mode = encodeURIComponent(rawMode);
+
+            // Forward directly to the Main dashboard page with fallback query string intact
+            window.location.href = `lpft_main.html?name=${name}&icao=${icao}&hub=${hub}&mode=${mode}`;
+        }
+
+        function handleNavigation(direction) {
+            if (currentStep === 3 && direction === 1) {
+                initializeAirline();
+                return;
+            }
+
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('active');
+            if(direction === 1) {
+                document.getElementById(`dot${currentStep}`).classList.add('completed');
+            }
+
+            currentStep += direction;
+
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('completed');
+
+            document.getElementById('prevBtn').disabled = (currentStep === 1);
+            
+            if (currentStep === 3) {
+                document.getElementById('nextBtn').innerText = "Initialize Airline";
+            } else {
+                document.getElementById('nextBtn').innerText = "Next Step";
+            }
+        }
+    </script>
+</body>
+</html>

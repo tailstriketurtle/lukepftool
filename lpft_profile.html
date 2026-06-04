@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKEPFTOOL - Corporate Roster Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #070b10;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Compact Navigation Sidebar Box Layout */
+        .sidebar {
+            width: 70px;
+            background: #0c0f14;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            z-index: 10;
+            flex-shrink: 0;
+            height: 100vh;
+        }
+        .sidebar-brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(33, 150, 243, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2196f3;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+            align-items: center;
+        }
+        .nav-item {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.1rem;
+            border-radius: 10px;
+            transition: 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+        .nav-item.active {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+            border: 1px solid rgba(33, 150, 243, 0.2);
+        }
+        .sidebar-footer {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+        .sidebar-footer:hover {
+            background: rgba(239, 83, 80, 0.1);
+            color: #ef5350;
+        }
+
+        /* Core Workspace Display Viewport */
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background-image: radial-gradient(circle at top right, rgba(33, 150, 243, 0.02), transparent 40%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100vh;
+        }
+        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar-track { background: transparent; }
+        .main-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+
+        /* Top Header Action Banner */
+        .profile-top-bar {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar-title h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        .top-bar-title p {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 2px;
+        }
+        
+        .btn-action-trigger {
+            background: #2196f3;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-action-trigger:hover {
+            background: #1976d2;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.25);
+        }
+
+        /* Split Screen Workspace Configuration Matrix */
+        .profile-layout-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Cyber Glass Utility Blueprint Cards */
+        .glass-panel-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .panel-heading {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+        .panel-heading .title-text { display: flex; align-items: center; gap: 8px; }
+        .panel-heading i { color: #2196f3; }
+
+        /* Sorting Toggles Toolbar Container */
+        .sort-toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sort-toolbar-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .sort-btn-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .sort-btn-pill:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        .sort-btn-pill.active {
+            background: rgba(33, 150, 243, 0.12);
+            border-color: rgba(33, 150, 243, 0.3);
+            color: #2196f3;
+        }
+
+        /* Form Configuration Fields */
+        .input-wrapper-field { display: flex; flex-direction: column; gap: 6px; }
+        .input-wrapper-field label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.4); font-weight: 600; }
+        .form-input-element { background: rgba(7, 11, 16, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 8px; color: #fff; font-family: 'Inter', sans-serif; font-size: 0.85rem; transition: 0.2s; width: 100%; }
+        .form-input-element:focus { outline: none; border-color: #2196f3; box-shadow: 0 0 10px rgba(33, 150, 243, 0.15); }
+        .form-input-element option { background: #0c0f14; color: #fff; padding: 6px; }
+        
+        /* Multiple Selection Display Layout Box */
+        .multi-select-hint { font-size: 0.68rem; color: rgba(255,255,255,0.25); margin-top: -2px; font-style: italic; }
+
+        .color-selector-row { display: grid; grid-template-columns: 1fr 50px; gap: 10px; }
+        .color-picker-input { padding: 4px; height: 43px; cursor: pointer; }
+
+        /* Dynamic Custom Role Micro Tags */
+        .role-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .role-badges-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .role-list-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .role-list-strip::-webkit-scrollbar { width: 4px; }
+        .role-list-strip::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 2px; }
+
+        .role-strip-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.01);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* Ledger Table Roster Layout */
+        .table-data-enclosure { 
+            width: 100%; 
+            border: 1px solid rgba(255, 255, 255, 0.04); 
+            border-radius: 12px; 
+            background: rgba(7, 11, 16, 0.3); 
+            overflow: hidden; 
+        }
+        .roster-ledger-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        .roster-ledger-table th { padding: 14px 16px; font-size: 0.7rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.05); letter-spacing: 0.5px; background: rgba(255, 255, 255, 0.01); }
+        .roster-ledger-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.02); vertical-align: middle; }
+        .roster-ledger-table tr:last-child td { border-bottom: none; }
+        
+        .profile-avatar-node { width: 32px; height: 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+        .identity-flex-block { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+        
+        .empty-table-prompt { text-align: center !important; color: rgba(255, 255, 255, 0.25); padding: 4.5rem !important; font-style: italic; }
+        
+        /* Inline Action Control Layout Buttons */
+        .actions-cell-flex { display: flex; align-items: center; gap: 8px; }
+        .btn-row-action { background: transparent; border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-row-action:hover { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+        .btn-row-action.delete-type:hover { background: rgba(244, 67, 54, 0.1); border-color: #f44336; color: #f44336; }
+        .btn-row-action.edit-type:hover { background: rgba(33, 150, 243, 0.1); border-color: #2196f3; color: #2196f3; }
+
+        /* Modal Overlay Subsystem */
+        .modal-blur-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 5, 8, 0.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s ease; }
+        .modal-blur-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-window-card { background: #0c0f14; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; width: 420px; padding: 2rem; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform: translateY(-20px); transition: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-blur-overlay.active .modal-window-card { transform: translateY(0); }
+        .modal-header-line { display: flex; justify-content: space-between; align-items: center; }
+        .modal-header-line h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+        .btn-close-modal { background: transparent; border: none; color: rgba(255,255,255,0.3); font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .btn-close-modal:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar-container" class="sidebar"></div>
+
+    <div class="main-content">
+        
+        <div class="profile-top-bar">
+            <div class="top-bar-title">
+                <h2>Corporate Roster Manager</h2>
+                <p>Register enterprise staff, adjust operational clearance tags, and sort logs</p>
+            </div>
+            <button class="btn-action-trigger" onclick="openEmployeeModal(false)">
+                <i class="fa-solid fa-user-plus"></i> Add Employee
+            </button>
+        </div>
+
+        <div class="profile-layout-grid">
+            
+            <div class="glass-panel-box">
+                <div class="panel-heading">
+                    <span class="title-text"><i class="fa-solid fa-tags"></i> Roster Clearances</span>
+                </div>
+                
+                <div class="input-wrapper-field">
+                    <label>New Role Title</label>
+                    <input type="text" id="txtRoleTitle" class="form-input-element" placeholder="e.g. Captain, Dispatcher">
+                </div>
+
+                <div class="input-wrapper-field">
+                    <label>Role Theme Color</label>
+                    <div class="color-selector-row">
+                        <input type="text" id="txtRoleColorHex" class="form-input-element" value="#2196f3" placeholder="#000000">
+                        <input type="color" id="pickRoleColor" class="form-input-element color-picker-input" value="#2196f3" oninput="document.getElementById('txtRoleColorHex').value = this.value">
+                    </div>
+                </div>
+
+                <button class="btn-action-trigger" style="justify-content: center; width: 100%; margin-top: 5px;" onclick="createNewCustomRole()">
+                    <i class="fa-solid fa-plus"></i> Save Role Card
+                </button>
+
+                <div class="panel-heading" style="border-top: 1px solid rgba(255,255,255,0.05); border-bottom: none; padding-top: 10px; margin-top: 5px; font-size: 0.75rem;">
+                    Active Department Keys
+                </div>
+                <div id="roleStripContainer" class="role-list-strip">
+                    </div>
+            </div>
+
+            <div class="glass-panel-box" style="gap: 15px;">
+                <div class="panel-heading" style="border-bottom: none; padding-bottom: 0px;">
+                    <span class="title-text"><i class="fa-solid fa-users-viewfinder"></i> Staff Roster Index</span>
+                    
+                    <div class="sort-toolbar-group">
+                        <span class="sort-toolbar-label">Sort by:</span>
+                        <button id="sortBtn-alphabetical" class="sort-btn-pill active" onclick="changeRosterSort('alphabetical')">A-Z</button>
+                        <button id="sortBtn-rank" class="sort-btn-pill" onclick="changeRosterSort('rank')">Rank</button>
+                        <button id="sortBtn-salary" class="sort-btn-pill" onclick="changeRosterSort('salary')">Salary</button>
+                        <button id="sortBtn-date" class="sort-btn-pill" onclick="changeRosterSort('date')">Date Added</button>
+                    </div>
+                </div>
+
+                <div class="table-data-enclosure">
+                    <table class="roster-ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Personnel Identity</th>
+                                <th>Assigned Clearances</th>
+                                <th>Base Salary ($)</th>
+                                <th>Date Added</th>
+                                <th style="width: 80px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rosterTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-table-prompt">No employee records currently hosted in this station terminal.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="employeeModalOverlay" class="modal-blur-overlay" onclick="if(event.target === this) closeEmployeeModal()">
+        <div class="modal-window-card">
+            <div class="modal-header-line">
+                <h3 id="modalDisplayTitle">Add Employee Record</h3>
+                <button class="btn-close-modal" onclick="closeEmployeeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="hidden" id="hdnStaffIndex" value="-1">
+
+            <div class="input-wrapper-field">
+                <label>Full Employee Name</label>
+                <input type="text" id="txtStaffName" class="form-input-element" placeholder="e.g. Capt. James Lawrence">
+            </div>
+
+            <div class="input-wrapper-field">
+                <label>Operational Designation(s)</label>
+                <span class="multi-select-hint">Hold Ctrl (or Cmd) to select multiple assignments</span>
+                <select id="ddlStaffRoles" class="form-input-element" multiple style="height: 110px;">
+                    </select>
+            </div>
+
+            <div class="input-wrapper-field">
+                <label>Monthly Salary Contract Valuation</label>
+                <input type="number" id="numStaffSalary" class="form-input-element" placeholder="e.g. 8500" min="0">
+            </div>
+
+            <button id="btnModalSubmit" class="btn-action-trigger" style="justify-content: center; width: 100%; margin-top: 10px;" onclick="submitEmployeeForm()">
+                <i class="fa-solid fa-user-check"></i> Enlist To Roster
+            </button>
+        </div>
+    </div>
+
+    <script src="sidebar.js"></script>
+    <script>
+        let appDatabase = null;
+        let localCarrierIcao = "NX";
+        let currentSortCriteria = "alphabetical"; // Fallback index flag: alphabetical, rank, salary, date
+
+        // Sync and structure local storage objects cleanly
+        function initCorporateDatabase() {
+            const params = new URLSearchParams(window.location.search);
+            localCarrierIcao = (params.get('icao') || 'NX').toUpperCase();
+
+            const raw = localStorage.getItem('lpf_airline_db');
+            if (raw) {
+                appDatabase = JSON.parse(raw);
+            } else {
+                appDatabase = {
+                    airlineName: params.get('name') || "Global Air Logistics",
+                    icao: localCarrierIcao,
+                    hub: (params.get('hub') || 'MDPC').toUpperCase(),
+                    mode: params.get('mode') || 'admiral',
+                    balance: 5000000,
+                    stats: { activeSchedules: 0, crewCount: 0, totalFlights: 0, fleetCount: 1 },
+                    fleet: [], flightLogs: [], topRoutes: []
+                };
+            }
+
+            // Establish structured storage default tags if non-existent
+            if (!appDatabase.rosterRoles) {
+                appDatabase.rosterRoles = [
+                    { name: "Executive Officer", color: "#2196f3" },
+                    { name: "First Officer", color: "#ffb300" },
+                    { name: "Fleet Crew", color: "#4caf50" }
+                ];
+            }
+            if (!appDatabase.rosterStaff) {
+                appDatabase.rosterStaff = [];
+            }
+
+            saveCorporateDatabase();
+        }
+
+        function saveCorporateDatabase() {
+            localStorage.setItem('lpf_airline_db', JSON.stringify(appDatabase));
+        }
+
+        // Modal Form Orchestration
+        function openEmployeeModal(isEditMode, staffIndex = -1) {
+            const overlay = document.getElementById('employeeModalOverlay');
+            const title = document.getElementById('modalDisplayTitle');
+            const submitBtn = document.getElementById('btnModalSubmit');
+            const hdnId = document.getElementById('hdnStaffIndex');
+            
+            populateRolesDropdown();
+            
+            const nameInput = document.getElementById('txtStaffName');
+            const rolesSelect = document.getElementById('ddlStaffRoles');
+            const salaryInput = document.getElementById('numStaffSalary');
+
+            if (isEditMode && staffIndex > -1) {
+                const record = appDatabase.rosterStaff[staffIndex];
+                title.innerText = "Modify Employee File";
+                submitBtn.innerHTML = `<i class="fa-solid fa-user-pen"></i> Apply Roster Changes`;
+                hdnId.value = staffIndex;
+
+                nameInput.value = record.name;
+                salaryInput.value = record.salary;
+
+                // Handle multi-select array checks matching record profile logs
+                const staffRolesArray = Array.isArray(record.roles) ? record.roles : [record.role || ""];
+                for (let i = 0; i < rolesSelect.options.length; i++) {
+                    rolesSelect.options[i].selected = staffRolesArray.includes(rolesSelect.options[i].value);
+                }
+            } else {
+                title.innerText = "Add Employee Record";
+                submitBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Enlist To Roster`;
+                hdnId.value = "-1";
+
+                nameInput.value = '';
+                salaryInput.value = '';
+                rolesSelect.selectedIndex = -1;
+            }
+
+            overlay.classList.add('active');
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModalOverlay').classList.remove('active');
+        }
+
+        // Display Operational Clearance Badges
+        function renderRolesPanel() {
+            const container = document.getElementById('roleStripContainer');
+            container.innerHTML = '';
+
+            appDatabase.rosterRoles.forEach((role, idx) => {
+                const div = document.createElement('div');
+                div.className = 'role-strip-item';
+                div.innerHTML = `
+                    <span class="role-badge-pill" style="background:${role.color}15; color:${role.color}; border: 1px solid ${role.color}30;">
+                        ${role.name}
+                    </span>
+                    <button class="btn-row-action delete-type" style="width:24px; height:24px; font-size:0.65rem;" onclick="removeCustomRole(${idx})" title="Delete Role">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function populateRolesDropdown() {
+            const select = document.getElementById('ddlStaffRoles');
+            select.innerHTML = '';
+
+            appDatabase.rosterRoles.forEach(role => {
+                const opt = document.createElement('option');
+                opt.value = role.name;
+                opt.innerText = role.name;
+                select.appendChild(opt);
+            });
+        }
+
+        // Create Custom Structural Clearances
+        function createNewCustomRole() {
+            const titleInput = document.getElementById('txtRoleTitle');
+            const colorInput = document.getElementById('txtRoleColorHex');
+            
+            const title = titleInput.value.trim();
+            const color = colorInput.value.trim();
+
+            if (!title) {
+                alert("Please declare a meaningful department role title.");
+                return;
+            }
+
+            const duplicate = appDatabase.rosterRoles.some(r => r.name.toLowerCase() === title.toLowerCase());
+            if (duplicate) {
+                alert("This operational designation key already exists inside your layout database.");
+                return;
+            }
+
+            appDatabase.rosterRoles.push({ name: title, color: color });
+            saveCorporateDatabase();
+            
+            titleInput.value = '';
+            renderRolesPanel();
+        }
+
+        function removeCustomRole(idx) {
+            if (confirm("Deleting this structural role will filter it out from any active employees holding it. Proceed?")) {
+                const roleName = appDatabase.rosterRoles[idx].name;
+                appDatabase.rosterRoles.splice(idx, 1);
+
+                // Scrub deleted multi-role keys off existing staff configurations completely
+                appDatabase.rosterStaff.forEach(staff => {
+                    if (Array.isArray(staff.roles)) {
+                        staff.roles = staff.roles.filter(r => r !== roleName);
+                    }
+                    if (staff.role === roleName) staff.role = "";
+                });
+
+                saveCorporateDatabase();
+                renderRolesPanel();
+                renderRosterLedgerTable();
+            }
+        }
+
+        // Form Process routing: Dynamic Add vs Update Split Routine Logic
+        function submitEmployeeForm() {
+            const hdnIdx = parseInt(document.getElementById('hdnStaffIndex').value);
+            const nameInput = document.getElementById('txtStaffName').value.trim();
+            const salaryInput = parseInt(document.getElementById('numStaffSalary').value) || 0;
+            const rolesSelect = document.getElementById('ddlStaffRoles');
+
+            // Map standard matching multi-select arrays cleanly out of choices
+            const selectedRoles = Array.from(rolesSelect.selectedOptions).map(option => option.value);
+
+            if (!nameInput || selectedRoles.length === 0) {
+                alert("Please define employee naming identities and highlight one or more corporate department roles.");
+                return;
+            }
+
+            if (hdnIdx > -1) {
+                // Edit operational track path
+                const staffRecord = appDatabase.rosterStaff[hdnIdx];
+                staffRecord.name = nameInput;
+                staffRecord.salary = salaryInput;
+                staffRecord.roles = selectedRoles;
+                // Preserve traditional layout tags for backwards compatibility
+                staffRecord.role = selectedRoles[0] || ""; 
+            } else {
+                // Construction path entry
+                const dateStamp = new Date().toISOString().split('T')[0];
+                appDatabase.rosterStaff.push({
+                    name: nameInput,
+                    roles: selectedRoles,
+                    role: selectedRoles[0] || "",
+                    salary: salaryInput,
+                    dateAdded: dateStamp
+                });
+            }
+
+            if (appDatabase.stats) {
+                appDatabase.stats.crewCount = appDatabase.rosterStaff.length;
+            }
+
+            saveCorporateDatabase();
+            closeEmployeeModal();
+            renderRosterLedgerTable();
+        }
+
+        function removeStaffMember(actualIndex) {
+            if (confirm("Revoke this individual employee clearance file from operational active records permanently?")) {
+                appDatabase.rosterStaff.splice(actualIndex, 1);
+                if (appDatabase.stats) {
+                    appDatabase.stats.crewCount = appDatabase.rosterStaff.length;
+                }
+                saveCorporateDatabase();
+                renderRosterLedgerTable();
+            }
+        }
+
+        // Core Sorting Sub-Engine Trigger Actions
+        function changeRosterSort(sortType) {
+            currentSortCriteria = sortType;
+            
+            // Toggle highlight selector state across button navigation pills
+            document.querySelectorAll('.sort-btn-pill').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`sortBtn-${sortType}`).classList.add('active');
+            
+            renderRosterLedgerTable();
+        }
+
+        // Process Ledger Spreadsheet Output UI Matrix
+        function renderRosterLedgerTable() {
+            const tbody = document.getElementById('rosterTableBody');
+            tbody.innerHTML = '';
+
+            if (!appDatabase.rosterStaff || appDatabase.rosterStaff.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-table-prompt">No employee records currently hosted in this station terminal.</td></tr>`;
+                return;
+            }
+
+            // Map native arrays with explicit root indices intact to ensure modifications execute properly
+            let processingList = appDatabase.rosterStaff.map((staff, originIndex) => ({ ...staff, originIdx: originIndex }));
+
+            // Sorting algorithm switches
+            if (currentSortCriteria === 'alphabetical') {
+                processingList.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (currentSortCriteria === 'salary') {
+                processingList.sort((a, b) => b.salary - a.salary); // Highest contract values pinned on top
+            } else if (currentSortCriteria === 'date') {
+                processingList.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)); // Fresh deployments first
+            } else if (currentSortCriteria === 'rank') {
+                // Compares hierarchical indices mapped directly out of custom role creation configurations
+                const getHighestRankWeight = (rolesArr) => {
+                    const rolesList = Array.isArray(rolesArr) ? rolesArr : [rolesArr || ""];
+                    let highestIdx = 999;
+                    rolesList.forEach(rName => {
+                        const idx = appDatabase.rosterRoles.findIndex(role => role.name === rName);
+                        if (idx > -1 && idx < highestIdx) highestIdx = idx;
+                    });
+                    return highestIdx;
+                };
+                processingList.sort((a, b) => getHighestRankWeight(a.roles || a.role) - getHighestRankWeight(b.roles || b.role));
+            }
+
+            // Loop sorted elements on top of view rows
+            processingList.forEach((staff) => {
+                const tr = document.createElement('tr');
+                const staffRoles = Array.isArray(staff.roles) ? staff.roles : [staff.role || ""];
+
+                // Build modern flex array block holding color tag metrics
+                let badgesMarkup = `<div class="role-badges-wrapper">`;
+                staffRoles.forEach(rName => {
+                    if(!rName) return;
+                    const match = appDatabase.rosterRoles.find(r => r.name === rName);
+                    const color = match ? match.color : '#718096';
+                    badgesMarkup += `
+                        <span class="role-badge-pill" style="background:${color}12; color:${color}; border: 1px solid ${color}25;">
+                            ${rName}
+                        </span>`;
+                });
+                if(staffRoles.length === 0 || (staffRoles.length === 1 && !staffRoles[0])) {
+                    badgesMarkup += `<span class="role-badge-pill" style="background:rgba(255,255,255,0.02); color:rgba(255,255,255,0.35);">Unassigned</span>`;
+                }
+                badgesMarkup += `</div>`;
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="identity-flex-block">
+                            <div class="profile-avatar-node"><i class="fa-solid fa-user-tie"></i></div>
+                            <span>${staff.name}</span>
+                        </div>
+                    </td>
+                    <td>${badgesMarkup}</td>
+                    <td><strong>$${staff.salary.toLocaleString()}</strong></td>
+                    <td style="color: rgba(255,255,255,0.55); font-size:0.8rem;"><i class="fa-regular fa-calendar-check" style="margin-right:5px; color:#2196f3;"></i> ${staff.dateAdded}</td>
+                    <td>
+                        <div class="actions-cell-flex">
+                            <button class="btn-row-action edit-type" onclick="openEmployeeModal(true, ${staff.originIdx})" title="Edit Employee Profile"><i class="fa-solid fa-user-gear"></i></button>
+                            <button class="btn-row-action delete-type" onclick="removeStaffMember(${staff.originIdx})" title="Terminate Employment File"><i class="fa-solid fa-user-minus"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // View Initialization Sequence Loop Execution
+        window.addEventListener('DOMContentLoaded', () => {
+            initCorporateDatabase();
+            renderRolesPanel();
+            renderRosterLedgerTable();
+            
+            // Synchronize picker tool interactions manually
+            document.getElementById('txtRoleColorHex').addEventListener('input', function() {
+                if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+                    document.getElementById('pickRoleColor').value = this.value;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

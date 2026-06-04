@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKEPFTOOL - Route Network & Dispatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;700&family=Syne:wght=700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #070b10; color: #fff; min-height: 100vh; display: flex; overflow: hidden; }
+        
+        /* Sidebar Structural Formatting Reverted to Main Specification */
+        .sidebar { width: 70px; min-width: 70px; height: 100vh; background: #0c0f14; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 2rem 0; z-index: 10; }
+        .sidebar-brand-icon { width: 40px; height: 40px; background: rgba(33, 150, 243, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #2196f3; font-size: 1.2rem; margin-bottom: 3rem; }
+        .nav-links { display: flex; flex-direction: column; gap: 20px; flex-grow: 1; align-items: center; }
+        .nav-item { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); font-size: 1.1rem; border-radius: 10px; transition: 0.2s; cursor: pointer; text-decoration: none; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; }
+        .nav-item.active { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.2); }
+        .sidebar-footer { color: rgba(255, 255, 255, 0.35); font-size: 1.1rem; cursor: pointer; transition: 0.2s; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+        .sidebar-footer:hover { background: rgba(239, 83, 80, 0.1); color: #ef5350; }
+
+        /* Main Core Framework Layout rules */
+        .main-content { flex-grow: 1; height: 100vh; padding: 2rem; overflow-y: auto; background-image: radial-gradient(circle at top right, rgba(33, 150, 243, 0.02), transparent 40%); display: flex; flex-direction: column; gap: 20px; position: relative; }
+        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar-track { background: transparent; }
+        .main-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+
+        .profile-top-bar { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .top-bar-title h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; }
+        .top-bar-title p { font-size: 0.82rem; color: rgba(255, 255, 255, 0.4); margin-top: 2px; }
+        
+        .btn-action-trigger { background: #2196f3; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-action-trigger:hover { background: #1976d2; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.25); }
+
+        .glass-panel-box { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 15px; }
+        .panel-heading { font-size: 0.9rem; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 10px; }
+        .panel-heading i { color: #2196f3; }
+
+        /* Ledger Table Design */
+        .table-data-enclosure { width: 100%; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; background: rgba(7, 11, 16, 0.3); overflow: hidden; }
+        .roster-ledger-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        .roster-ledger-table th { padding: 14px 16px; font-size: 0.7rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.05); letter-spacing: 0.5px; background: rgba(255, 255, 255, 0.01); }
+        .roster-ledger-table th.sortable-header { cursor: pointer; transition: color 0.2s; }
+        .roster-ledger-table th.sortable-header:hover { color: #2196f3; }
+        .roster-ledger-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.02); vertical-align: middle; }
+        
+        .route-airport-pill { background: rgba(33, 150, 243, 0.08); border: 1px solid rgba(33, 150, 243, 0.2); padding: 4px 8px; border-radius: 6px; color: #2196f3; font-family: monospace; font-weight: 700; font-size: 0.85rem; }
+        .route-arrow-icon { color: rgba(255, 255, 255, 0.2); font-size: 0.75rem; margin: 0 4px; }
+        .empty-table-prompt { text-align: center !important; color: rgba(255, 255, 255, 0.25); padding: 4.5rem !important; font-style: italic; }
+        
+        /* Interactive Form Fields inside Ledger Cells */
+        .inline-ledger-select { background: #0c1016; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); font-family: 'Inter', sans-serif; font-size: 0.78rem; padding: 4px 8px; border-radius: 6px; cursor: pointer; width: 100%; max-width: 170px; }
+        .inline-ledger-select:focus { border-color: #2196f3; outline: none; }
+
+        .actions-cell-flex { display: flex; align-items: center; gap: 8px; }
+        .btn-row-action { background: transparent; border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-row-action:hover { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+        .btn-row-action.delete-type:hover { background: rgba(244, 67, 54, 0.1); border-color: #f44336; color: #f44336; }
+        .btn-row-action.start-type:hover { background: rgba(76, 175, 80, 0.1); border-color: #4caf50; color: #4caf50; }
+
+        /* Form Controls */
+        .input-wrapper-field { display: flex; flex-direction: column; gap: 6px; position: relative; width: 100%; }
+        .input-wrapper-field label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.4); font-weight: 600; }
+        .form-select-element, .form-input-element { background: #0f131a; border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 8px; color: #fff; font-family: 'Inter', sans-serif; font-size: 0.85rem; transition: 0.2s; width: 100%; }
+        
+        /* Modal Overlay Windows */
+        .modal-overlay-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 6, 9, 0.85); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-container-window { background: #0c1016; border: 1px solid rgba(255, 255, 255, 0.08); width: 520px; max-width: 90%; border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; gap: 20px; }
+        .modal-header-stepper { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
+        .modal-header-stepper h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; }
+        .modal-stage-pill { background: rgba(33, 150, 243, 0.1); border: 1px solid rgba(33, 150, 243, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: #2196f3; }
+        .modal-body-stage { display: none; flex-direction: column; gap: 15px; }
+        .modal-body-stage.active-stage { display: flex; }
+        .modal-footer-controls { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-modal-control { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-modal-control.primary-action { background: #2196f3; border-color: transparent; }
+
+        .demand-metric-board { background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; }
+        .demand-data-node h5 { font-size: 0.68rem; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+        .demand-data-node div { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: #ffb74d; }
+
+        .scaling-matrix-panel { background: rgba(33, 150, 243, 0.03); border: 1px solid rgba(33, 150, 243, 0.1); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
+        .scaling-matrix-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .scaling-matrix-label { color: rgba(255,255,255,0.5); }
+        .scaling-matrix-value { font-weight: 700; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar-container" class="sidebar"></div>
+
+    <div class="main-content">
+        <div class="profile-top-bar">
+            <div class="top-bar-title">
+                <h2>Flight Route Network</h2>
+                <p>Map airport sectors, analyze passenger demand metrics, and deploy your active fleet assets</p>
+            </div>
+            <button class="btn-action-trigger" onclick="openInitializationModal()">
+                <i class="fa-solid fa-plane-departure"></i> Initialize Route
+            </button>
+        </div>
+
+        <div class="glass-panel-box">
+            <div class="panel-heading">
+                <span><i class="fa-solid fa-route"></i> Scheduled Operations Ledger</span>
+            </div>
+
+            <div class="table-data-enclosure">
+                <table class="roster-ledger-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable-header" onclick="sortLedgerByField('origin')">Flight Sector <i class="fa-solid fa-sort"></i></th>
+                            <th class="sortable-header" onclick="sortLedgerByField('departureDate')">Departure Date <i class="fa-solid fa-sort"></i></th>
+                            <th class="sortable-header" onclick="sortLedgerByField('distance')">Distance <i class="fa-solid fa-sort"></i></th>
+                            <th>Assigned Aircraft Frame</th>
+                            <th>Assigned Flight Commander</th>
+                            <th class="sortable-header" onclick="sortLedgerByField('bookedPax')">Booked Passengers <i class="fa-solid fa-sort"></i></th>
+                            <th style="width: 80px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="routesTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-table-prompt">No active flight pathways initialized across company logbooks.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay-backdrop" id="routeStepperModal">
+        <div class="modal-container-window">
+            <div class="modal-header-stepper">
+                <h3 id="modalTitleText">Route Dispatch Configuration</h3>
+                <span class="modal-stage-pill" id="modalStagePillIndicator">Page 1 of 2</span>
+            </div>
+
+            <div class="modal-body-stage active-stage" id="modalStage1">
+                <div class="input-wrapper-field">
+                    <label>Departure Airport (Project Flight Hub)</label>
+                    <select id="selOriginAirport" class="form-select-element">
+                        <option value="" disabled selected>Select Origin Hub...</option>
+                        <option value="EGKK">EGKK - London Gatwick Airport</option>
+                        <option value="EGHI">EGHI - Southampton Airport</option>
+                        <option value="GCLP">GCLP - Gran Canaria Airport</option>
+                        <option value="LEMH">LEMH - Menorca Airport</option>
+                        <option value="EFKT">EFKT - Kittilä Airport</option>
+                        <option value="LCLK">LCLK - Larnaca International Airport</option>
+                        <option value="LCPH">LCPH - Paphos International Airport</option>
+                        <option value="LCRA">LCRA - RAF Akrotiri Base</option>
+                        <option value="MDPC">MDPC - Punta Cana International</option>
+                        <option value="MDCR">MDCR - Cabo Rojo Regional</option>
+                        <option value="MDST">MDST - Cibao International</option>
+                        <option value="MDAB">MDAB - Arroyo Barril Airport</option>
+                        <option value="MTCA">MTCA - Antoine-Simon Airport</option>
+                    </select>
+                </div>
+
+                <div class="input-wrapper-field">
+                    <label>Arrival Airport (Project Flight Sector)</label>
+                    <select id="selDestinationAirport" class="form-select-element">
+                        <option value="" disabled selected>Select Destination...</option>
+                        <option value="EGKK">EGKK - London Gatwick Airport</option>
+                        <option value="EGHI">EGHI - Southampton Airport</option>
+                        <option value="GCLP">GCLP - Gran Canaria Airport</option>
+                        <option value="LEMH">LEMH - Menorca Airport</option>
+                        <option value="EFKT">EFKT - Kittilä Airport</option>
+                        <option value="LCLK">LCLK - Larnaca International Airport</option>
+                        <option value="LCPH">LCPH - Paphos International Airport</option>
+                        <option value="LCRA">LCRA - RAF Akrotiri Base</option>
+                        <option value="MDPC">MDPC - Punta Cana International</option>
+                        <option value="MDCR">MDCR - Cabo Rojo Regional</option>
+                        <option value="MDST">MDST - Cibao International</option>
+                        <option value="MDAB">MDAB - Arroyo Barril Airport</option>
+                        <option value="MTCA">MTCA - Antoine-Simon Airport</option>
+                    </select>
+                </div>
+
+                <div class="input-wrapper-field">
+                    <label>Operational Scheduled Date</label>
+                    <input type="date" id="dateRouteDeparture" class="form-input-element">
+                </div>
+
+                <div class="input-wrapper-field">
+                    <label>Route Sector Distance (Nautical Miles)</label>
+                    <input type="number" id="numRouteDistance" class="form-input-element" placeholder="e.g. 240" min="1">
+                </div>
+            </div>
+
+            <div class="modal-body-stage" id="modalStage2">
+                <div class="demand-metric-board">
+                    <div class="demand-data-node">
+                        <h5 id="lblOriginDemand">Origin Route Pool</h5>
+                        <div id="valOriginDemand">0 pax</div>
+                    </div>
+                    <div class="demand-data-node">
+                        <h5 id="lblDestDemand">Destination Pool</h5>
+                        <div id="valDestDemand">0 pax</div>
+                    </div>
+                </div>
+
+                <div class="input-wrapper-field">
+                    <label>Deploy System Aircraft Fleet Asset</label>
+                    <select id="selAssignedAircraft" class="form-select-element" onchange="calculateScaledLoadFactor()">
+                        <option value="">No Aircraft Assigned (Grounded)</option>
+                    </select>
+                </div>
+
+                <div class="input-wrapper-field">
+                    <label>Assigned Flight Crew Commander</label>
+                    <select id="selAssignedEmployee" class="form-select-element">
+                        <option value="">No Operator Assigned (Standby)</option>
+                    </select>
+                </div>
+
+                <div class="scaling-matrix-panel">
+                    <div class="scaling-matrix-row">
+                        <span class="scaling-matrix-label">Selected Plane Seating Limit:</span>
+                        <span class="scaling-matrix-value" id="matrixCapacityVal">0 Seats</span>
+                    </div>
+                    <div class="scaling-matrix-row">
+                        <span class="scaling-matrix-label">Actual Ticket Sales (50-100% Load):</span>
+                        <span class="scaling-matrix-value" style="color: #4caf50;" id="matrixBookedVal">0 Pax</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer-controls">
+                <button class="btn-modal-control" id="btnModalCancel" onclick="handleModalSecondaryAction()">Cancel</button>
+                <button class="btn-modal-control primary-action" id="btnModalNext" onclick="advanceModalStage()">Next Page <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="lpft_storage.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        let appDatabase = null;
+        let currentModalStage = 1;
+        let sortDirection = true;
+        
+        let generatedOriginDemand = 0;
+        let generatedDestDemand = 0;
+        let finalBookedPassengers = 0;
+
+        const airportDemandWeights = {
+            'EGKK': { min: 450, max: 980 }, 'MDPC': { min: 300, max: 620 },
+            'LCLK': { min: 200, max: 480 }, 'GCLP': { min: 180, max: 400 },
+            'MDST': { min: 120, max: 280 }, 'LCPH': { min: 100, max: 240 },
+            'EGHI': { min: 60, max: 150 },  'LEMH': { min: 50, max: 130 },
+            'EFKT': { min: 40, max: 110 },  'LCRA': { min: 15, max: 45 },
+            'MTCA': { min: 20, max: 60 },   'MDAB': { min: 12, max: 35 },
+            'MDCR': { min: 5, max: 25 }
+        };
+
+        function initRouteDatabase() {
+            let db = typeof loadDatabase === "function" ? loadDatabase() : null;
+            if(!db) {
+                const raw = localStorage.getItem('lpf_airline_db');
+                if(raw) db = JSON.parse(raw);
+            }
+            
+            if(!db) {
+                db = {
+                    airlineName: "Global Air Logistics", icao: "GAL", hub: "EGKK", mode: "admiral",
+                    balance: 5000000, stats: { activeSchedules: 0, crewCount: 2 },
+                    fleet: [{ model: 'Twin Otter (DHC-6)', reg: 'HI-983', maxPax: 19, status: 'Available' }], 
+                    flightLogs: [], topRoutes: [],
+                    rosterStaff: [{ name: "Captain H" }, { name: "First Officer Q" }]
+                };
+            }
+            appDatabase = db;
+            saveRouteDatabase();
+        }
+
+        function saveRouteDatabase() {
+            if (appDatabase) {
+                if (typeof saveDatabase === "function") saveDatabase(appDatabase);
+                else localStorage.setItem('lpf_airline_db', JSON.stringify(appDatabase));
+            }
+        }
+
+        function populateRosterAndFleetDropdowns() {
+            const employeeDropdown = document.getElementById('selAssignedEmployee');
+            const fleetDropdown = document.getElementById('selAssignedAircraft');
+            
+            employeeDropdown.innerHTML = '<option value="">No Operator Assigned (Standby)</option>';
+            fleetDropdown.innerHTML = '<option value="">No Aircraft Assigned (Grounded)</option>';
+
+            if(appDatabase.rosterStaff) {
+                appDatabase.rosterStaff.forEach(staff => {
+                    employeeDropdown.innerHTML += `<option value="${staff.name}">${staff.name}</option>`;
+                });
+            }
+
+            if(appDatabase.fleet) {
+                appDatabase.fleet.forEach(ac => {
+                    const tail = ac.reg || 'N-100';
+                    fleetDropdown.innerHTML += `<option value="${tail}">${ac.model} [${tail.toUpperCase()}]</option>`;
+                });
+            }
+        }
+
+        function openInitializationModal() {
+            currentModalStage = 1;
+            document.getElementById('modalStage1').classList.add('active-stage');
+            document.getElementById('modalStage2').classList.remove('active-stage');
+            document.getElementById('modalStagePillIndicator').innerText = "Page 1 of 2";
+            document.getElementById('btnModalCancel').innerText = "Cancel";
+            document.getElementById('btnModalNext').innerHTML = 'Next Page <i class="fa-solid fa-arrow-right"></i>';
+            document.getElementById('dateRouteDeparture').value = new Date().toISOString().split('T')[0];
+            document.getElementById('routeStepperModal').style.display = 'flex';
+        }
+
+        function handleModalSecondaryAction() {
+            if (currentModalStage === 2) {
+                currentModalStage = 1;
+                document.getElementById('modalStage2').classList.remove('active-stage');
+                document.getElementById('modalStage1').classList.add('active-stage');
+                document.getElementById('modalStagePillIndicator').innerText = "Page 1 of 2";
+                document.getElementById('btnModalCancel').innerText = "Cancel";
+                document.getElementById('btnModalNext').innerHTML = 'Next Page <i class="fa-solid fa-arrow-right"></i>';
+            } else {
+                document.getElementById('routeStepperModal').style.display = 'none';
+            }
+        }
+
+        function advanceModalStage() {
+            if (currentModalStage === 1) {
+                const origin = document.getElementById('selOriginAirport').value;
+                const destination = document.getElementById('selDestinationAirport').value;
+                const distance = parseInt(document.getElementById('numRouteDistance').value) || 0;
+
+                if (!origin || !destination || origin === destination || distance <= 0) {
+                    return alert("Please select valid, separate airports and verify flight distance.");
+                }
+
+                const oWeights = airportDemandWeights[origin] || { min: 30, max: 100 };
+                const dWeights = airportDemandWeights[destination] || { min: 30, max: 100 };
+
+                generatedOriginDemand = Math.floor(Math.random() * (oWeights.max - oWeights.min + 1)) + oWeights.min;
+                generatedDestDemand = Math.floor(Math.random() * (dWeights.max - dWeights.min + 1)) + dWeights.min;
+
+                document.getElementById('lblOriginDemand').innerText = `${origin} Market Pool`;
+                document.getElementById('lblDestDemand').innerText = `${destination} Market Pool`;
+                document.getElementById('valOriginDemand').innerText = `${generatedOriginDemand} Pax`;
+                document.getElementById('valDestDemand').innerText = `${generatedDestDemand} Pax`;
+
+                document.getElementById('modalStage1').classList.remove('active-stage');
+                document.getElementById('modalStage2').classList.add('active-stage');
+                document.getElementById('modalStagePillIndicator').innerText = "Page 2 of 2";
+                document.getElementById('btnModalCancel').innerText = "Back";
+                document.getElementById('btnModalNext').innerHTML = '<i class="fa-solid fa-check"></i> Initialize Route Block';
+                
+                currentModalStage = 2;
+                calculateScaledLoadFactor();
+            } else {
+                commitRoutePayload();
+            }
+        }
+
+        function calculateScaledLoadFactor() {
+            const fleetReg = document.getElementById('selAssignedAircraft').value;
+            let maxCapacity = 0;
+
+            if (fleetReg && appDatabase.fleet) {
+                const plane = appDatabase.fleet.find(p => p.reg === fleetReg);
+                if (plane) maxCapacity = parseInt(plane.maxPax) || 0;
+            }
+
+            if (maxCapacity === 0) {
+                document.getElementById('matrixCapacityVal').innerText = "Grounded Status";
+                document.getElementById('matrixBookedVal').innerText = "0 Pax";
+                finalBookedPassengers = 0;
+                return;
+            }
+
+            const minScale = Math.ceil(maxCapacity * 0.50);
+            let simulatedSales = Math.floor(Math.random() * (maxCapacity - minScale + 1)) + minScale;
+
+            if (simulatedSales > generatedOriginDemand) {
+                simulatedSales = Math.max(minScale, generatedOriginDemand);
+            }
+
+            finalBookedPassengers = simulatedSales;
+            document.getElementById('matrixCapacityVal').innerText = `${maxCapacity} Seats`;
+            document.getElementById('matrixBookedVal').innerText = `${finalBookedPassengers} Pax (${Math.round((finalBookedPassengers/maxCapacity)*100)}% Load)`;
+        }
+
+        function commitRoutePayload() {
+            const origin = document.getElementById('selOriginAirport').value;
+            const destination = document.getElementById('selDestinationAirport').value;
+            const distance = document.getElementById('numRouteDistance').value;
+            const departureDate = document.getElementById('dateRouteDeparture').value;
+            const assignedCrew = document.getElementById('selAssignedEmployee').value;
+            const assignedAircraft = document.getElementById('selAssignedAircraft').value;
+
+            appDatabase.topRoutes.push({
+                origin: origin, destination: destination, distance: parseInt(distance),
+                departureDate: departureDate, assignedCrew: assignedCrew, assignedAircraft: assignedAircraft,
+                bookedPax: finalBookedPassengers
+            });
+
+            saveRouteDatabase();
+            document.getElementById('routeStepperModal').style.display = 'none';
+            renderRoutesLedgerTable();
+        }
+
+        function updateInlineRowProperty(index, field, element) {
+            appDatabase.topRoutes[index][field] = element.value;
+            saveRouteDatabase();
+        }
+
+        function sortLedgerByField(field) {
+            sortDirection = !sortDirection;
+            appDatabase.topRoutes.sort((a, b) => {
+                let valA = a[field];
+                let valB = b[field];
+                if (typeof valA === 'string') return sortDirection ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                return sortDirection ? valA - valB : valB - valA;
+            });
+            renderRoutesLedgerTable();
+        }
+
+        function removeFlightRoute(index) {
+            appDatabase.topRoutes.splice(index, 1);
+            saveRouteDatabase();
+            renderRoutesLedgerTable();
+        }
+
+        function renderRoutesLedgerTable() {
+            const tbody = document.getElementById('routesTableBody');
+            tbody.innerHTML = '';
+
+            if (!appDatabase.topRoutes || appDatabase.topRoutes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-table-prompt">No active flight pathways initialized across company logbooks.</td></tr>`;
+                return;
+            }
+
+            appDatabase.topRoutes.forEach((route, index) => {
+                let acOptions = `<option value="">Grounded</option>`;
+                if(appDatabase.fleet) {
+                    appDatabase.fleet.forEach(p => {
+                        const isSel = p.reg === route.assignedAircraft ? 'selected' : '';
+                        acOptions += `<option value="${p.reg}" ${isSel}>${p.model} [${p.reg.toUpperCase()}]</option>`;
+                    });
+                }
+
+                let crewOptions = `<option value="">Standby</option>`;
+                if(appDatabase.rosterStaff) {
+                    appDatabase.rosterStaff.forEach(s => {
+                        const isSel = s.name === route.assignedCrew ? 'selected' : '';
+                        crewOptions += `<option value="${s.name}" ${isSel}>${s.name}</option>`;
+                    });
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <span class="route-airport-pill">${route.origin}</span>
+                        <i class="fa-solid fa-arrow-right-long route-arrow-icon"></i>
+                        <span class="route-airport-pill" style="color:#4caf50; background:rgba(76,175,80,0.08); border-color:rgba(76,175,80,0.2);">${route.destination}</span>
+                    </td>
+                    <td><span style="font-family: monospace;">${route.departureDate}</span></td>
+                    <td><strong>${route.distance} NM</strong></td>
+                    <td>
+                        <select class="inline-ledger-select" onchange="updateInlineRowProperty(${index}, 'assignedAircraft', this)">
+                            ${acOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <select class="inline-ledger-select" onchange="updateInlineRowProperty(${index}, 'assignedCrew', this)">
+                            ${crewOptions}
+                        </select>
+                    </td>
+                    <td><strong style="color: #ffb74d;">${route.bookedPax || 0} Pax</strong></td>
+                    <td>
+                        <div class="actions-cell-flex">
+                            <button class="btn-row-action start-type" onclick="window.location.href='lpft_fly.html'" title="Start Flight Network"><i class="fa-solid fa-play"></i></button>
+                            <button class="btn-row-action delete-type" onclick="removeFlightRoute(${index})" title="Delete Route"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initRouteDatabase();
+            populateRosterAndFleetDropdowns();
+            renderRoutesLedgerTable();
+        });
+    </script>
+</body>
+</html>

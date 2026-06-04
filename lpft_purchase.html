@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKEPFTOOL - Buy Aircraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #070b10; color: #fff; min-height: 100vh; display: flex; overflow: hidden; }
+        
+        /* Sidebar Navigation Structural Rules */
+        .sidebar { width: 70px; min-width: 70px; height: 100vh; background: #0c0f14; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 2rem 0; z-index: 10; }
+        .sidebar-brand-icon { width: 40px; height: 40px; background: rgba(33, 150, 243, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #2196f3; font-size: 1.2rem; margin-bottom: 3rem; }
+        .nav-links { display: flex; flex-direction: column; gap: 20px; flex-grow: 1; align-items: center; }
+        .nav-item { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); font-size: 1.1rem; border-radius: 10px; transition: 0.2s; cursor: pointer; text-decoration: none; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; }
+        .nav-item.active { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.2); }
+        .sidebar-footer { color: rgba(255, 255, 255, 0.35); font-size: 1.1rem; cursor: pointer; transition: 0.2s; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+        .sidebar-footer:hover { background: rgba(239, 83, 80, 0.1); color: #ef5350; }
+
+        /* Main Split Layout */
+        .main-content { flex-grow: 1; height: 100vh; padding: 2rem; overflow: hidden; display: flex; gap: 25px; }
+        
+        /* Left Column: Marketplace Shop */
+        .shop-column { flex: 3; height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding-right: 10px; }
+        .shop-column::-webkit-scrollbar { width: 6px; }
+        .shop-column::-webkit-scrollbar-track { background: transparent; }
+        .shop-column::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        .shop-column::-webkit-scrollbar-thumb:hover { background: rgba(33, 150, 243, 0.4); }
+
+        .page-header { margin-bottom: 5px; }
+        .page-header h2 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; }
+        .page-header p { font-size: 0.85rem; color: rgba(255, 255, 255, 0.45); margin-top: 4px; }
+        
+        .bank-bar { background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; flex-shrink: 0; }
+        .bank-bar span { color: rgba(255,255,255,0.6); }
+        .bank-bar strong { color: #4caf50; font-family: 'Syne', sans-serif; font-size: 1.2rem; }
+
+        .aircraft-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 20px; }
+        .aircraft-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; gap: 15px; transition: 0.2s; }
+        .aircraft-card:hover { border-color: rgba(33, 150, 243, 0.3); background: rgba(255, 255, 255, 0.03); }
+        .card-meta h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .card-meta p { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); }
+        .card-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 5px; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .card-price { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: #2196f3; }
+        .buy-btn { background: #2196f3; border: none; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .buy-btn:hover { background: #1976d2; }
+
+        /* Right Column: Fleet Cart Panel */
+        .cart-column { flex: 2; height: 100%; background: #0c0f14; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .cart-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
+        .cart-header h3 { font-size: 1rem; font-weight: 700; }
+        .clear-cart-btn { background: transparent; border: none; color: rgba(255, 255, 255, 0.3); font-size: 0.75rem; cursor: pointer; }
+        .clear-cart-btn:hover { color: #ef5350; }
+        
+        .cart-items-container { flex-grow: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 15px; }
+        .cart-items-container::-webkit-scrollbar { width: 4px; }
+        .cart-items-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 2px; }
+        
+        .cart-item-block { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .item-main-row { display: flex; justify-content: space-between; align-items: center; }
+        .item-info h4 { font-size: 0.85rem; font-weight: 700; }
+        .item-info p { font-size: 0.75rem; color: #2196f3; margin-top: 2px; }
+        
+        .qty-stepper { display: flex; align-items: center; background: rgba(7, 11, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; }
+        .qty-btn { background: transparent; border: none; color: #fff; width: 28px; height: 28px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .qty-btn:hover { background: rgba(255,255,255,0.05); }
+        .qty-val { width: 32px; text-align: center; font-size: 0.8rem; font-weight: 600; color: #fff; }
+
+        .reg-inputs-panel { border-top: 1px dashed rgba(255, 255, 255, 0.06); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+        .reg-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.15); padding: 4px 8px; border-radius: 6px; }
+        .reg-row label { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; font-weight: 600; }
+        .reg-field { background: rgba(7, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 3px 8px; color: #2196f3; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: right; width: 110px; text-transform: uppercase; }
+        .reg-field:focus { border-color: #2196f3; outline: none; }
+
+        .cart-footer { padding: 1.5rem; background: rgba(7, 11, 16, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; gap: 12px; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+        .total-row strong { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: #fff; }
+        .checkout-btn { background: #4caf50; border: none; color: #fff; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; width: 100%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15); }
+        .checkout-btn:hover { background: #43a047; }
+        .checkout-btn:disabled { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); box-shadow: none; cursor: not-allowed; }
+        .empty-cart-msg { text-align: center; color: rgba(255,255,255,0.25); font-size: 0.8rem; margin: auto 0; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar-container" class="sidebar"></div>
+
+    <div class="main-content">
+        <div class="shop-column">
+            <div class="page-header">
+                <h2>Project Flight Marketplace</h2>
+                <p>Expand your company fleet. Purchased craft will bind instantly to your flight lines ledger.</p>
+            </div>
+
+            <div class="bank-bar">
+                <span>Available Corporate Funds:</span>
+                <strong id="lblWalletBalance">$0</strong>
+            </div>
+
+            <div class="aircraft-grid" id="marketGrid"></div>
+        </div>
+
+        <div class="cart-column">
+            <div class="cart-header">
+                <h3>Acquisition List</h3>
+                <button class="clear-cart-btn" onclick="clearCart()">Clear All</button>
+            </div>
+
+            <div class="cart-items-container" id="cartContainer">
+                <div class="empty-cart-msg">Your shopping cart is currently empty.</div>
+            </div>
+
+            <div class="cart-footer">
+                <div class="total-row">
+                    <span>Total Investment:</span>
+                    <strong id="lblTotalCost">$0</strong>
+                </div>
+                <button class="checkout-btn" id="btnCheckout" onclick="processPurchase()" disabled>
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Finalize Purchase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="sidebar.js"></script>
+    <script>
+        // AUTHENTIC ROBLOX PROJECT FLIGHT INVENTORY ONLY
+        const AIRCRAFT_DATA = [
+            { id: 'dhc6', model: 'Twin Otter (DHC-6)', desc: 'Short Takeoff Utility Turboprop', range: '775 nm', speed: '170 kts', cap: '19 Pax', maxPax: 19, type: 'Prop', price: 380000 },
+            { id: 'b350', model: 'Beechcraft King Air 350', desc: 'Premium Corporate Turboprop', range: '1,806 nm', speed: '312 kts', cap: '9 Pax', maxPax: 9, type: 'Prop', price: 850000 },
+            { id: 'at76', model: 'ATR 72-600', desc: 'High-Efficiency Regional Turboprop', range: '737 nm', speed: '275 kts', cap: '72 Pax', maxPax: 72, type: 'Prop', price: 1950000 },
+            { id: 'dh8d', model: 'Dash 8-Q400', desc: 'High-Speed Regional Turboprop', range: '1,100 nm', speed: '360 kts', cap: '78 Pax', maxPax: 78, type: 'Prop', price: 2200000 },
+            { id: 'b738', model: 'Boeing 737-800', desc: 'High-Capacity Medium Range Airliner', range: '2,930 nm', speed: '450 kts', cap: '162 Pax', maxPax: 162, type: 'Jet', price: 4500000 },
+            { id: 'a20n', model: 'Airbus A320neo', desc: 'Ultra-Efficient Next-Gen Narrowbody', range: '3,500 nm', speed: '440 kts', cap: '150 Pax', maxPax: 150, type: 'Jet', price: 4900000 },
+            { id: 'a21n', model: 'Airbus A321neo', desc: 'Extended Range High Density Trunkliner', range: '4,000 nm', speed: '440 kts', cap: '192 Pax', maxPax: 192, type: 'Jet', price: 5600000 },
+            { id: 'b789', model: 'Boeing 787-9', desc: 'Super-Efficient Dreamliner Widebody', range: '7,530 nm', speed: '488 kts', cap: '296 Pax', maxPax: 296, type: 'Jet', price: 10200000 },
+            { id: 'a359', model: 'Airbus A350-900', desc: 'Advanced Long-Haul Widebody flagship', range: '8,100 nm', speed: '488 kts', cap: '325 Pax', maxPax: 325, type: 'Jet', price: 11500000 },
+            { id: 'b77w', model: 'Boeing 777-300ER', desc: 'Heavy Intercontinental Backbone Fleet', range: '7,370 nm', speed: '482 kts', cap: '396 Pax', maxPax: 396, type: 'Jet', price: 13800000 }
+        ];
+
+        let db = null;
+        let cart = {}; 
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const raw = localStorage.getItem('lpf_airline_db');
+            if(raw) {
+                db = JSON.parse(raw);
+                document.getElementById('lblWalletBalance').innerText = `$${db.balance.toLocaleString()}`;
+            } else {
+                alert("No active flight profile detected. Please configure via the dashboard setup first.");
+                window.location.href = 'lpft_main.html';
+                return;
+            }
+            renderMarketplace();
+        });
+
+        function renderMarketplace() {
+            const grid = document.getElementById('marketGrid');
+            grid.innerHTML = AIRCRAFT_DATA.map(p => `
+                <div class="aircraft-card">
+                    <div class="card-meta">
+                        <h3>${p.model}</h3>
+                        <p>${p.desc}</p>
+                        <div class="card-specs">
+                            <div>Range: ${p.range}</div>
+                            <div>Speed: ${p.speed}</div>
+                            <div>Capacity: ${p.cap}</div>
+                            <div>Type: ${p.type}</div>
+                        </div>
+                    </div>
+                    <div class="card-bottom">
+                        <div class="card-price">$${p.price.toLocaleString()}</div>
+                        <button class="buy-btn" onclick="addToCart('${p.id}', '${p.model.replace(/'/g, "\\'")}', ${p.price}, ${p.maxPax})">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id, model, price, maxPax) {
+            const currentIcao = db ? db.icao : 'NX';
+            const initialFleetLength = (db && db.fleet) ? db.fleet.length : 0;
+            
+            if (!cart[id]) {
+                cart[id] = {
+                    model: model,
+                    price: price,
+                    maxPax: maxPax,
+                    qty: 1,
+                    regs: [`${currentIcao}-${100 + initialFleetLength + Math.floor(Math.random() * 90)}`]
+                };
+            } else {
+                cart[id].qty += 1;
+                cart[id].regs.push(`${currentIcao}-${100 + initialFleetLength + cart[id].qty + Math.floor(Math.random() * 90)}`);
+            }
+            renderCart();
+        }
+
+        function updateQty(id, modifier) {
+            if (!cart[id]) return;
+            cart[id].qty += modifier;
+            
+            if (cart[id].qty <= 0) {
+                delete cart[id];
+            } else {
+                if (modifier > 0) {
+                    const currentIcao = db ? db.icao : 'NX';
+                    const initialFleetLength = (db && db.fleet) ? db.fleet.length : 0;
+                    cart[id].regs.push(`${currentIcao}-${100 + initialFleetLength + cart[id].qty + Math.floor(Math.random() * 90)}`);
+                } else {
+                    cart[id].regs.pop();
+                }
+            }
+            renderCart();
+        }
+
+        function updateRegValue(id, index, element) {
+            cart[id].regs[index] = element.value.toUpperCase().trim();
+        }
+
+        function clearCart() {
+            cart = {};
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartContainer');
+            const totalLabel = document.getElementById('lblTotalCost');
+            const checkoutBtn = document.getElementById('btnCheckout');
+            
+            let orderTotal = 0;
+            let itemKeys = Object.keys(cart);
+
+            if (itemKeys.length === 0) {
+                container.innerHTML = '<div class="empty-cart-msg">Your shopping cart is currently empty.</div>';
+                totalLabel.innerText = '$0';
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            container.innerHTML = itemKeys.map(id => {
+                const item = cart[id];
+                orderTotal += (item.price * item.qty);
+
+                let regFieldsHTML = '';
+                for (let i = 0; i < item.qty; i++) {
+                    regFieldsHTML += `
+                        <div class="reg-row">
+                            <label>Frame #${i + 1} Tail Reg:</label>
+                            <input type="text" class="reg-field" value="${item.regs[i] || ''}" oninput="updateRegValue('${id}', ${i}, this)" maxlength="10">
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="cart-item-block">
+                        <div class="item-main-row">
+                            <div class="item-info">
+                                <h4>${item.model}</h4>
+                                <p>$${item.price.toLocaleString()} / each</p>
+                            </div>
+                            <div class="qty-stepper">
+                                <button class="qty-btn" onclick="updateQty('${id}', -1)"><i class="fa-solid fa-minus"></i></button>
+                                <div class="qty-val">${item.qty}</div>
+                                <button class="qty-btn" onclick="updateQty('${id}', 1)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <div class="reg-inputs-panel">
+                            ${regFieldsHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            totalLabel.innerText = `$${orderTotal.toLocaleString()}`;
+            checkoutBtn.disabled = false;
+        }
+
+        function processPurchase() {
+            if (!db) return;
+
+            let orderTotal = 0;
+            let planesToAdd = [];
+            let validationFailed = false;
+
+            Object.keys(cart).forEach(id => {
+                const item = cart[id];
+                orderTotal += (item.price * item.qty);
+
+                for (let i = 0; i < item.qty; i++) {
+                    const reg = item.regs[i];
+                    if (!reg) validationFailed = true;
+                    planesToAdd.push({
+                        id: id,
+                        model: item.model,
+                        reg: reg,
+                        maxPax: item.maxPax,
+                        status: 'Available', // Synchronized initialization string with lpft_main display conditions
+                        purchasedOn: new Date().toISOString().split('T')[0]
+                    });
+                }
+            });
+
+            if (validationFailed) {
+                alert("Please ensure all tail registration fields are filled completely before finalizing purchase.");
+                return;
+            }
+
+            if (db.balance < orderTotal) {
+                alert(`Insufficient corporate capital. Required: $${orderTotal.toLocaleString()} | Balance: $${db.balance.toLocaleString()}`);
+                return;
+            }
+
+            db.balance -= orderTotal;
+            if (!db.fleet) db.fleet = [];
+            db.fleet = db.fleet.concat(planesToAdd);
+
+            localStorage.setItem('lpf_airline_db', JSON.stringify(db));
+            alert(`Purchase successful! ${planesToAdd.length} aircraft added to your fleet.`);
+            clearCart();
+            document.getElementById('lblWalletBalance').innerText = `$${db.balance.toLocaleString()}`;
+        }
+    </script>
+</body>
+</html>

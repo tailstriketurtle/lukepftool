@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKEPFTOOL - Airline Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #070b10; color: #fff; min-height: 100vh; display: flex; overflow: hidden; }
+        
+        /* Sidebar Navigation Structural Rules */
+        .sidebar { width: 70px; min-width: 70px; height: 100vh; background: #0c0f14; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 2rem 0; z-index: 10; }
+        .sidebar-brand-icon { width: 40px; height: 40px; background: rgba(33, 150, 243, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #2196f3; font-size: 1.2rem; margin-bottom: 3rem; }
+        .nav-links { display: flex; flex-direction: column; gap: 20px; flex-grow: 1; align-items: center; }
+        .nav-item { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); font-size: 1.1rem; border-radius: 10px; transition: 0.2s; cursor: pointer; text-decoration: none; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; }
+        .nav-item.active { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.2); }
+        .sidebar-footer { color: rgba(255, 255, 255, 0.35); font-size: 1.1rem; cursor: pointer; transition: 0.2s; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+        .sidebar-footer:hover { background: rgba(239, 83, 80, 0.1); color: #ef5350; }
+        
+        /* Layout Framework - SCROLLABLE MAIN VIEWPORT */
+        .main-content { flex-grow: 1; height: 100vh; padding: 2rem; overflow-y: auto; background-image: radial-gradient(circle at top right, rgba(33, 150, 243, 0.02), transparent 40%); display: flex; flex-direction: column; gap: 20px; position: relative; }
+        
+        /* Clean webkit scrollbar implementation */
+        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar-track { background: transparent; }
+        .main-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 4px; }
+        .main-content::-webkit-scrollbar-thumb:hover { background: rgba(33, 150, 243, 0.3); }
+
+        /* Master Action Banner - Base Structure */
+        .master-banner { 
+            position: relative; 
+            background-color: #12161c; 
+            background-size: cover; 
+            background-position: center; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-top: 1px solid rgba(255, 255, 255, 0.12); 
+            padding: 2rem 2.5rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+            overflow: hidden; 
+            transition: background-image 0.3s ease;
+            min-height: 155px;
+        }
+        /* Glossy Liquid Glass Overlay Layer */
+        .master-banner::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background: linear-gradient(135deg, rgba(7, 11, 16, 0.88) 0%, rgba(33, 150, 243, 0.25) 55%, rgba(12, 15, 20, 0.88) 100%); 
+            z-index: 1; 
+        }
+        
+        /* Banner Interface Components */
+        .banner-left { position: relative; z-index: 2; display: flex; align-items: center; gap: 24px; }
+        .airline-avatar-box { width: 75px; height: 75px; background: rgba(255, 255, 255, 0.02); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4); padding: 10px; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .airline-avatar-box i { color: #2196f3; font-size: 2.2rem; }
+        .banner-meta-info .context-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: #2196f3; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .banner-meta-info h2 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .banner-subtitle { font-size: 0.85rem; color: rgba(255, 255, 255, 0.45); margin-bottom: 14px; }
+        .banner-badges-row { display: flex; gap: 8px; }
+        .banner-badge { background: rgba(7, 11, 16, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 6px; }
+        .banner-badge i { color: #2196f3; }
+        .banner-right { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 20px; height: 100%; justify-content: space-between; }
+        .banner-actions { display: flex; gap: 10px; align-items: center; }
+        .banner-btn { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 14px; border-radius: 8px; color: #fff; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .banner-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.15); }
+        
+        /* Grid Layouts & Cards */
+        .row-triple-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; flex-shrink: 0; }
+        .overview-mini-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 16px; }
+        .mini-card-icon { width: 42px; height: 42px; background: rgba(33, 150, 243, 0.05); border: 1px solid rgba(33, 150, 243, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #2196f3; font-size: 1.1rem; }
+        .mini-card-details h4 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+        .mini-card-details p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.45); }
+        
+        .row-quad-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; flex-shrink: 0; }
+        .metric-data-block { background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 14px; padding: 1.25rem; }
+        .metric-block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .metric-block-header span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.35); font-weight: 700; }
+        .metric-pill-tag { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 2px 10px; border-radius: 20px; font-size: 0.65rem; color: #2196f3; font-weight: 600; }
+        .metric-data-block h3 { font-family: 'Syne', sans-serif; font-size: 1.75rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .metric-data-block h3.cash-green { color: #4caf50; text-shadow: 0 0 15px rgba(76, 175, 80, 0.1); }
+        .metric-block-subtext { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); }
+        
+        /* Tables Panel Viewports */
+        .row-dual-tables { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding-bottom: 1rem; }
+        .table-panel-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; }
+        .table-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .table-panel-header h4 { font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .table-panel-header p { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); margin-top: 2px; }
+        .panel-table-wrapper { width: 100%; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; background: rgba(7, 11, 16, 0.3); overflow: hidden; }
+        .panel-data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+        .panel-data-table th { padding: 12px; font-size: 0.7rem; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.05); letter-spacing: 0.5px; background: rgba(255, 255, 255, 0.01); }
+        .panel-data-table td { padding: 14px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.02); }
+        .panel-data-table tr:last-child td { border-bottom: none; }
+        .empty-placeholder-row { text-align: center !important; color: rgba(255, 255, 255, 0.3); padding: 2.5rem !important; font-style: italic; }
+
+        /* Dynamic Status Badges styles */
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+        .status-operational { background: rgba(76, 175, 80, 0.1); color: #4caf50; border: 1px solid rgba(76, 175, 80, 0.2); }
+        .status-maintenance { background: rgba(255, 179, 0, 0.1); color: #ffb300; border: 1px solid rgba(255, 179, 0, 0.2); }
+        .status-oos { background: rgba(244, 67, 54, 0.1); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.2); }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar-container" class="sidebar"></div>
+
+    <div class="main-content">
+        <div class="master-banner" id="hubBannerBox">
+            <div class="banner-left">
+                <div class="airline-avatar-box"><i class="fa-solid fa-shield-cat"></i></div>
+                <div class="banner-meta-info">
+                    <div class="context-tag"><i class="fa-solid fa-circle" style="font-size:0.4rem; color:#2196f3;"></i> Airline Control</div>
+                    <h2 id="lblAirlineName">Loading Flight Profile...</h2>
+                    <div class="banner-subtitle">Welcome back, Captain. Your metrics are fully updated.</div>
+                    <div class="banner-badges-row">
+                        <span class="banner-badge" id="lblIcao"><i class="fa-solid fa-passport"></i> Code: ---</span>
+                        <span class="banner-badge" id="lblHub"><i class="fa-solid fa-location-dot"></i> Hub: ---</span>
+                        <span class="banner-badge" id="lblMode"><i class="fa-solid fa-shield-halved"></i> Tier: ---</span>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-right">
+                <div class="banner-actions">
+                    <button class="banner-btn" onclick="window.location.reload();"><i class="fa-solid fa-rotate"></i> Refresh Data</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-triple-cards">
+            <div class="overview-mini-card">
+                <div class="mini-card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                <div class="mini-card-details">
+                    <h4>Flight Schedules</h4>
+                    <p>Assigned Routes: <span id="txtActiveRoutes">0</span></p>
+                </div>
+            </div>
+            <div class="overview-mini-card">
+                <div class="mini-card-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="mini-card-details">
+                    <h4>Staff & Crew</h4>
+                    <p><span id="txtCrewCount">0</span> hired workers</p>
+                </div>
+            </div>
+            <div class="overview-mini-card">
+                <div class="mini-card-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                <div class="mini-card-details">
+                    <h4>Server Connection</h4>
+                    <p style="color: #4caf50;">Connected</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-quad-metrics">
+            <div class="metric-data-block">
+                <div class="metric-block-header"><span>Total Flights</span><span class="metric-pill-tag">History</span></div>
+                <h3 id="txtTotalFlights">0</h3>
+                <div class="metric-block-subtext">Today: 0 • Month: 0</div>
+            </div>
+            <div class="metric-data-block">
+                <div class="metric-block-header"><span>Money Balance</span><span class="metric-pill-tag">Cash</span></div>
+                <h3 class="cash-green" id="lblBalance">$0</h3>
+                <div class="metric-block-subtext" id="lblModeCap">Company Funds</div>
+            </div>
+            <div class="metric-data-block">
+                <div class="metric-block-header"><span>Active Flights</span><span class="metric-pill-tag">Live</span></div>
+                <h3 id="txtActiveDispatched">0</h3>
+                <div class="metric-block-subtext">Waiting for takeoff: 0</div>
+            </div>
+            <div class="metric-data-block">
+                <div class="metric-block-header"><span>Total Aircraft</span><span class="metric-pill-tag">Owned</span></div>
+                <h3 id="txtFleetCount">0</h3>
+                <div class="metric-block-subtext">Ready to fly: Live</div>
+            </div>
+        </div>
+
+        <div class="row-dual-tables">
+            <div class="table-panel-card">
+                <div class="table-panel-header"><div><h4>Recent Flight Logs</h4><p>Your history of completed flights</p></div></div>
+                <div class="panel-table-wrapper">
+                    <table class="panel-data-table" id="tblRecentFlights">
+                        <thead><tr><th>Flight ID</th><th>Origin</th><th>Destination</th><th>Plane Model</th><th>Earnings</th></tr></thead>
+                        <tbody id="logsTableBody"><tr><td colspan="5" class="empty-placeholder-row">No recorded flight entries found.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="table-panel-card">
+                <div class="table-panel-header"><div><h4>Owned Fleet Ledger</h4><p>Current active aircraft and operational status</p></div></div>
+                <div class="panel-table-wrapper">
+                    <table class="panel-data-table" id="tblFleetLedger">
+                        <thead><tr><th>Aircraft Model</th><th>Registration</th><th>Date Added</th><th>Flight Status</th></tr></thead>
+                        <tbody id="fleetTableBody">
+                            <tr><td colspan="4" class="empty-placeholder-row">No aircraft frames initialized in hangar.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lpft_storage.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        let appDatabase = null;
+
+        function getOnboardPayload() {
+            const params = new URLSearchParams(window.location.search);
+            return { name: params.get('name'), icao: params.get('icao'), hub: params.get('hub'), mode: params.get('mode') };
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let db = typeof loadDatabase === "function" ? loadDatabase() : null;
+            if(!db) {
+                const raw = localStorage.getItem('lpf_airline_db');
+                if(raw) db = JSON.parse(raw);
+            }
+            
+            const urlData = getOnboardPayload();
+            
+            if (urlData.name && urlData.icao && urlData.hub) {
+                if (!db) {
+                    db = {
+                        airlineName: urlData.name,
+                        icao: urlData.icao.toUpperCase(),
+                        hub: urlData.hub.toUpperCase(),
+                        mode: urlData.mode || 'admiral',
+                        balance: typeof getStartingCapital === "function" ? getStartingCapital(urlData.mode) : 5000000,
+                        stats: { activeSchedules: 0, crewCount: 0, totalFlights: 0, fleetCount: 1 },
+                        fleet: [{ id: 'dhc6', model: 'Twin Otter (DHC-6)', reg: 'HI-983', maxPax: 19, purchasedOn: new Date().toISOString().split('T')[0], status: 'Available' }],
+                        flightLogs: [], topRoutes: []
+                    };
+                    if (typeof saveDatabase === "function") saveDatabase(db);
+                    else localStorage.setItem('lpf_airline_db', JSON.stringify(db));
+                }
+            }
+            
+            appDatabase = db;
+            
+            if(appDatabase) {
+                document.getElementById('lblAirlineName').innerText = appDatabase.airlineName;
+                document.getElementById('lblIcao').innerHTML = `<i class="fa-solid fa-passport"></i> Code: ${appDatabase.icao}`;
+                document.getElementById('lblHub').innerHTML = `<i class="fa-solid fa-location-dot"></i> Hub: ${appDatabase.hub}`;
+                document.getElementById('lblMode').innerHTML = `<i class="fa-solid fa-shield-halved"></i> Tier: ${appDatabase.mode}`;
+                document.getElementById('lblBalance').innerText = `$${appDatabase.balance.toLocaleString()}`;
+                
+                const totalRoutesTracked = appDatabase.topRoutes ? appDatabase.topRoutes.length : 0;
+                const totalLogsTracked = appDatabase.flightLogs ? appDatabase.flightLogs.length : 0;
+                const crewCountTracked = appDatabase.stats ? (appDatabase.stats.crewCount || 0) : 0;
+                
+                document.getElementById('txtActiveRoutes').innerText = totalRoutesTracked;
+                document.getElementById('txtTotalFlights').innerText = totalLogsTracked;
+                document.getElementById('txtCrewCount').innerText = crewCountTracked;
+                document.getElementById('txtFleetCount').innerText = appDatabase.fleet ? appDatabase.fleet.length : 0;
+
+                const targetAirportImg = (appDatabase.hub || urlData.hub || '').toLowerCase().trim();
+                if (targetAirportImg) {
+                    document.getElementById('hubBannerBox').style.backgroundImage = `url('AIRPORT PHOTOS/${targetAirportImg}_photo.jpg')`;
+                }
+
+                const fleetBody = document.getElementById('fleetTableBody');
+                if(appDatabase.fleet && appDatabase.fleet.length > 0) {
+                    fleetBody.innerHTML = ''; 
+                    
+                    appDatabase.fleet.forEach((plane, index) => {
+                        const reg = plane.reg || `${appDatabase.icao || 'NX'}-${100 + index}`;
+                        const dateAdded = plane.purchasedOn || new Date().toISOString().split('T')[0];
+                        
+                        let statusClass = 'status-operational';
+                        let statusText = '● Available';
+                        
+                        if (plane.status === 'Maintenance') {
+                            statusClass = 'status-maintenance';
+                            statusText = '● In Maintenance';
+                        } else if (plane.status === 'Out of Service' || plane.status === 'Grounded' || plane.status === 'In Flight') {
+                            statusClass = plane.status === 'In Flight' ? 'status-maintenance' : 'status-oos';
+                            statusText = `● ${plane.status}`;
+                        }
+
+                        const rowHTML = `
+                            <tr>
+                                <td><strong>${plane.model}</strong></td>
+                                <td style="color: #2196f3; font-family: monospace; font-size: 0.85rem; font-weight: 600;">${reg.toUpperCase()}</td>
+                                <td>${dateAdded}</td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                        fleetBody.innerHTML += rowHTML;
+                    });
+                }
+
+                const logsBody = document.getElementById('logsTableBody');
+                if(appDatabase.flightLogs && appDatabase.flightLogs.length > 0) {
+                    logsBody.innerHTML = '';
+                    const displayLogs = [...appDatabase.flightLogs].reverse().slice(0, 5);
+                    displayLogs.forEach(log => {
+                        const rowHTML = `
+                            <tr>
+                                <td style="font-family: monospace; color: #2196f3; font-weight:600;">${log.flightId || 'FL-XYZ'}</td>
+                                <td><strong>${log.origin}</strong></td>
+                                <td><strong>${log.destination}</strong></td>
+                                <td style="color: rgba(255,255,255,0.7);">${log.aircraftModel}</td>
+                                <td style="color: #4caf50; font-weight: 600;">+$${log.revenue.toLocaleString()}</td>
+                            </tr>
+                        `;
+                        logsBody.innerHTML += rowHTML;
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
