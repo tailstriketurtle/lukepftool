@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!sidebarContainer) return; // Guard clause if the container isn't present
 
     const currentPath = window.location.pathname;
-    const isMain = currentPath.includes("lpft_main.html") || currentPath.endsWith("/");
+    const isMain = currentPath.includes("index.html") || currentPath.endsWith("/");
     const isRoutes = currentPath.includes("lpft_routes.html");
     const isPurchase = currentPath.includes("lpft_purchase.html");
     const isProfile = currentPath.includes("lpft_profile.html");
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div>
             <div class="sidebar-brand-icon"><i class="fa-solid fa-plane"></i></div>
             <div class="nav-links">
-                <a href="#" class="nav-item ${isMain ? 'active' : ''}" title="Dashboard Home" onclick="sidebarNavigate('lpft_main.html')">
+                <a href="#" class="nav-item ${isMain ? 'active' : ''}" title="Dashboard Home" onclick="sidebarNavigate('index.html')">
                     <i class="fa-solid fa-chart-pie"></i>
                 </a>
                 <a href="#" class="nav-item ${isRoutes ? 'active' : ''}" title="Route Network" onclick="sidebarNavigate('lpft_routes.html')">
