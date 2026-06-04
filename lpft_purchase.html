@@ -11,13 +11,13 @@
         body { font-family: 'Inter', sans-serif; background-color: #070b10; color: #fff; min-height: 100vh; display: flex; overflow: hidden; }
         
         /* Sidebar Navigation Structural Rules */
-        .sidebar { width: 70px; min-width: 70px; height: 100vh; background: #0c0f14; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; justify-content: spac[...]
-        .sidebar-brand-icon { width: 40px; height: 40px; background: rgba(33, 150, 243, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #2196f3; font[...]
+        .sidebar { width: 70px; min-width: 70px; height: 100vh; background: #0c0f14; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 2rem 0; z-index: 10; }
+        .sidebar-brand-icon { width: 40px; height: 40px; background: rgba(33, 150, 243, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #2196f3; font-size: 1.2rem; margin-bottom: 3rem; }
         .nav-links { display: flex; flex-direction: column; gap: 20px; flex-grow: 1; align-items: center; }
-        .nav-item { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); font-size: 1.1rem; border-radius: 10px; transition: 0.2[...]
+        .nav-item { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); font-size: 1.1rem; border-radius: 10px; transition: 0.2s; cursor: pointer; text-decoration: none; }
         .nav-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; }
         .nav-item.active { background: rgba(33, 150, 243, 0.1); color: #2196f3; border: 1px solid rgba(33, 150, 243, 0.2); }
-        .sidebar-footer { color: rgba(255, 255, 255, 0.35); font-size: 1.1rem; cursor: pointer; transition: 0.2s; width: 42px; height: 42px; display: flex; align-items: center; justify-content: ce[...]
+        .sidebar-footer { color: rgba(255, 255, 255, 0.35); font-size: 1.1rem; cursor: pointer; transition: 0.2s; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
         .sidebar-footer:hover { background: rgba(239, 83, 80, 0.1); color: #ef5350; }
 
         /* Main Split Layout */
@@ -34,23 +34,23 @@
         .page-header h2 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; }
         .page-header p { font-size: 0.85rem; color: rgba(255, 255, 255, 0.45); margin-top: 4px; }
         
-        .bank-bar { background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-ite[...]
+        .bank-bar { background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; flex-shrink: 0; }
         .bank-bar span { color: rgba(255,255,255,0.6); }
         .bank-bar strong { color: #4caf50; font-family: 'Syne', sans-serif; font-size: 1.2rem; }
 
         .aircraft-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 20px; }
-        .aircraft-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-co[...]
+        .aircraft-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; gap: 15px; transition: 0.2s; }
         .aircraft-card:hover { border-color: rgba(33, 150, 243, 0.3); background: rgba(255, 255, 255, 0.03); }
         .card-meta h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
         .card-meta p { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); }
-        .card-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8[...]
+        .card-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 5px; }
         .card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
         .card-price { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: #2196f3; }
-        .buy-btn { background: #2196f3; border: none; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; al[...]
+        .buy-btn { background: #2196f3; border: none; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
         .buy-btn:hover { background: #1976d2; }
 
         /* Right Column: Fleet Cart Panel */
-        .cart-column { flex: 2; height: 100%; background: #0c0f14; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-sh[...]
+        .cart-column { flex: 2; height: 100%; background: #0c0f14; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
         .cart-header { padding: 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
         .cart-header h3 { font-size: 1rem; font-weight: 700; }
         .clear-cart-btn { background: transparent; border: none; color: rgba(255, 255, 255, 0.3); font-size: 0.75rem; cursor: pointer; }
@@ -60,7 +60,7 @@
         .cart-items-container::-webkit-scrollbar { width: 4px; }
         .cart-items-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 2px; }
         
-        .cart-item-block { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;[...]
+        .cart-item-block { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
         .item-main-row { display: flex; justify-content: space-between; align-items: center; }
         .item-info h4 { font-size: 0.85rem; font-weight: 700; }
         .item-info p { font-size: 0.75rem; color: #2196f3; margin-top: 2px; }
@@ -73,13 +73,13 @@
         .reg-inputs-panel { border-top: 1px dashed rgba(255, 255, 255, 0.06); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
         .reg-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.15); padding: 4px 8px; border-radius: 6px; }
         .reg-row label { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; font-weight: 600; }
-        .reg-field { background: rgba(7, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 3px 8px; color: #2196f3; font-family: monospace; font-size: 0.75rem;[...]
+        .reg-field { background: rgba(7, 11, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 3px 8px; color: #2196f3; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: right; width: 110px; text-transform: uppercase; }
         .reg-field:focus { border-color: #2196f3; outline: none; }
 
         .cart-footer { padding: 1.5rem; background: rgba(7, 11, 16, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; gap: 12px; }
         .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
         .total-row strong { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: #fff; }
-        .checkout-btn { background: #4caf50; border: none; color: #fff; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; width: 100%; cursor: pointer; transition: 0.2s; di[...]
+        .checkout-btn { background: #4caf50; border: none; color: #fff; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; width: 100%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15); }
         .checkout-btn:hover { background: #43a047; }
         .checkout-btn:disabled { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); box-shadow: none; cursor: not-allowed; }
         .empty-cart-msg { text-align: center; color: rgba(255,255,255,0.25); font-size: 0.8rem; margin: auto 0; font-style: italic; }
@@ -136,10 +136,10 @@
             { id: 'dh8d', model: 'Dash 8-Q400', desc: 'High-Speed Regional Turboprop', range: '1,100 nm', speed: '360 kts', cap: '78 Pax', maxPax: 78, type: 'Prop', price: 2200000 },
             { id: 'b738', model: 'Boeing 737-800', desc: 'High-Capacity Medium Range Airliner', range: '2,930 nm', speed: '450 kts', cap: '162 Pax', maxPax: 162, type: 'Jet', price: 4500000 },
             { id: 'a20n', model: 'Airbus A320neo', desc: 'Ultra-Efficient Next-Gen Narrowbody', range: '3,500 nm', speed: '440 kts', cap: '150 Pax', maxPax: 150, type: 'Jet', price: 4900000 },
-            { id: 'a21n', model: 'Airbus A321neo', desc: 'Extended Range High Density Trunkliner', range: '4,000 nm', speed: '440 kts', cap: '192 Pax', maxPax: 192, type: 'Jet', price: 5600000 },[...]
+            { id: 'a21n', model: 'Airbus A321neo', desc: 'Extended Range High Density Trunkliner', range: '4,000 nm', speed: '440 kts', cap: '192 Pax', maxPax: 192, type: 'Jet', price: 5600000 },
             { id: 'b789', model: 'Boeing 787-9', desc: 'Super-Efficient Dreamliner Widebody', range: '7,530 nm', speed: '488 kts', cap: '296 Pax', maxPax: 296, type: 'Jet', price: 10200000 },
-            { id: 'a359', model: 'Airbus A350-900', desc: 'Advanced Long-Haul Widebody flagship', range: '8,100 nm', speed: '488 kts', cap: '325 Pax', maxPax: 325, type: 'Jet', price: 11500000 },[...]
-            { id: 'b77w', model: 'Boeing 777-300ER', desc: 'Heavy Intercontinental Backbone Fleet', range: '7,370 nm', speed: '482 kts', cap: '396 Pax', maxPax: 396, type: 'Jet', price: 13800000 [...]
+            { id: 'a359', model: 'Airbus A350-900', desc: 'Advanced Long-Haul Widebody flagship', range: '8,100 nm', speed: '488 kts', cap: '325 Pax', maxPax: 325, type: 'Jet', price: 11500000 },
+            { id: 'b77w', model: 'Boeing 777-300ER', desc: 'Heavy Intercontinental Backbone Fleet', range: '7,370 nm', speed: '482 kts', cap: '396 Pax', maxPax: 396, type: 'Jet', price: 13800000 }
         ];
 
         let db = null;
@@ -152,7 +152,7 @@
                 document.getElementById('lblWalletBalance').innerText = `$${db.balance.toLocaleString()}`;
             } else {
                 alert("No active flight profile detected. Please configure via the dashboard setup first.");
-                window.location.href = 'index.html';
+                window.location.href = 'lpft_main.html';
                 return;
             }
             renderMarketplace();
@@ -300,7 +300,7 @@
                         model: item.model,
                         reg: reg,
                         maxPax: item.maxPax,
-                        status: 'Available', // Synchronized initialization string with index display conditions
+                        status: 'Available', // Synchronized initialization string with lpft_main display conditions
                         purchasedOn: new Date().toISOString().split('T')[0]
                     });
                 }
