@@ -30,31 +30,49 @@
         }
         .login-card {
             background: linear-gradient(135deg, rgba(18, 22, 28, 0.65), rgba(12, 15, 20, 0.75)); 
-            padding: 3.5rem 2.5rem; border-radius: 20px;
+            padding: 4rem 2.5rem; border-radius: 20px;
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
             border: 1px solid rgba(255,255,255,0.04);
             border-top: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 30px 60px rgba(0,0,0,0.6);
         }
-        h2 { font-family: 'Syne', sans-serif; font-size: 1.25rem; text-transform: uppercase; margin-bottom: 3rem; opacity: 0.9; letter-spacing: 1px; }
-        .form-group { position: relative; margin-bottom: 2.2rem; border-bottom: 1px solid rgba(255,255,255,0.15); display: flex; }
-        .form-group:focus-within { border-bottom-color: #2196f3; }
-        input { width: 100%; background: none; border: none; outline: none; padding: 10px 30px 10px 0; color: #fff; font-size: 0.95rem; font-weight: 300; }
-        input::placeholder { color: rgba(255,255,255,0.3); }
-        i { position: absolute; right: 5px; bottom: 12px; color: rgba(255,255,255,0.35); font-size: 0.9rem; transition: 0.3s; }
-        .form-group:focus-within i { color: #2196f3; transform: scale(1.05); }
-        .register-link { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-bottom: 3rem; }
-        .register-link a { 
-            background: linear-gradient(135deg, #64b5f6, #2196f3); 
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
-            text-decoration: none; font-weight: 600; 
+        h2 { font-family: 'Syne', sans-serif; font-size: 1.25rem; text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0.9; letter-spacing: 1px; }
+        
+        .auth-notice-text {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            line-height: 1.6;
+            margin-bottom: 3rem;
         }
-        .login-btn {
-            background: linear-gradient(135deg, #64b5f6, #2196f3); color: #070b10; border: none; width: 100%; max-width: 220px;
-            padding: 0.85rem; font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 30px; transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+
+        /* Specialized Custom Branding Layout for Native Discord Button */
+        .discord-login-btn {
+            background: #5865F2; 
+            color: #ffffff; 
+            border: none; 
+            width: 100%; 
+            max-width: 260px;
+            padding: 0.95rem; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            border-radius: 30px; 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(88, 101, 242, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
         }
-        .login-btn:hover { transform: translateY(-1px); filter: brightness(1.08); box-shadow: 0 8px 25px rgba(33, 150, 243, 0.35); }
+        .discord-login-btn:hover { 
+            transform: translateY(-2px); 
+            background: #4752C4;
+            box-shadow: 0 8px 30px rgba(88, 101, 242, 0.55); 
+        }
+        .discord-login-btn:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -62,23 +80,40 @@
     <div class="login-container">
         <h1>LUKEPFTOOL</h1>
         <div class="login-card">
-            <h2>Sign In</h2>
-            <form action="lpft_onboard.html" method="POST" novalidate>
-                <div class="form-group">
-                    <input type="text" placeholder="Username or email" autocomplete="off">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Password">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="register-link">
-                    Need an account? <a href="lpft_register.html">Register here</a>
-                </div>
-                <button type="submit" class="login-btn">Login</button>
-            </form>
+            <h2>Aviation Gateway</h2>
+            <p class="auth-notice-text">
+                Securely synchronize your airframe inventory, track active routes, and load your custom profile settings using Discord Authentication.
+            </p>
+            
+            <button type="button" class="discord-login-btn" onclick="handleDiscordLogin()">
+                <i class="fa-brands fa-discord" style="position: static; font-size: 1.25rem; color: #fff;"></i> 
+                Sign In with Discord
+            </button>
         </div>
     </div>
 
+    <script>
+        function handleDiscordLogin() {
+            // Your verified Discord Client ID
+            const clientId = "1512000517176430733"; 
+            
+            // Automatically determines if you are running locally or live on GitHub Pages
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            const redirectUri = encodeURIComponent(window.location.origin + basePath + 'index.html');
+            
+            const scope = encodeURIComponent("identify");
+            
+            // Build cross-site verification security seed
+            const state = Math.random().toString(36).substring(2);
+            localStorage.setItem('oauth_state', state);
+
+            // Construct safe official authorization redirect matrix targeting Discord
+            const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
+            
+            // Route user directly into authorized validation deck
+            window.location.href = discordAuthUrl;
+        }
+    </script>
 </body>
 </html>
